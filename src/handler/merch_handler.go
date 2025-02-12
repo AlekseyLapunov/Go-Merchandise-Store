@@ -13,10 +13,10 @@ func NewMerchHandler(u *usecase.MerchUsecase) *MerchHandler {
 	return &MerchHandler{usecase: u} 
 }
 
-func (h *MerchHandler) Info(c *gin.Context) {
+func (h *MerchHandler) Info(ctx *gin.Context) {
 
 }
 
-func (h *MerchHandler) BuyItem(c *gin.Context) {
+func (h *MerchHandler) BuyItem(ctx *gin.Context) {
 
 }

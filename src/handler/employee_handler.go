@@ -13,10 +13,10 @@ func NewEmployeeHandler(u *usecase.EmployeeUsecase) *EmployeeHandler {
 	return &EmployeeHandler{usecase: u}
 }
 
-func (h *EmployeeHandler) Auth(c *gin.Context) {
+func (h *EmployeeHandler) Auth(ctx *gin.Context) {
 
 }
 
-func (h *EmployeeHandler) SendCoin(c *gin.Context) {
+func (h *EmployeeHandler) SendCoin(ctx *gin.Context) {
 
 }
