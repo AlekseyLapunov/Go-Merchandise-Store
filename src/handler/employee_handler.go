@@ -6,10 +6,10 @@ import (
 )
 
 type EmployeeHandler struct {
-	usecase usecase.EmployeeUsecase
+	usecase *usecase.EmployeeUsecase
 }
 
-func NewEmployeeHandler(u usecase.EmployeeUsecase) *EmployeeHandler {
+func NewEmployeeHandler(u *usecase.EmployeeUsecase) *EmployeeHandler {
 	return &EmployeeHandler{usecase: u}
 }
 

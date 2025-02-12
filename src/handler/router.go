@@ -5,7 +5,11 @@ import (
     "github.com/AlekseyLapunov/Go-Merchandise-Store/src/usecase"
 )
 
-func NewRouter(employeeUsecase usecase.EmployeeUsecase, merchUsecase usecase.MerchUsecase) *gin.Engine {
+func NewRouter(employeeUsecase *usecase.EmployeeUsecase, merchUsecase *usecase.MerchUsecase) *gin.Engine {
+    if employeeUsecase == nil || merchUsecase == nil {
+        
+    }
+
     router := gin.Default()
     router.Use(gin.Logger())
 

@@ -6,10 +6,10 @@ import (
 )
 
 type MerchHandler struct {
-	usecase usecase.MerchUsecase
+	usecase *usecase.MerchUsecase
 }
 
-func NewMerchHandler(u usecase.MerchUsecase) *MerchHandler {
+func NewMerchHandler(u *usecase.MerchUsecase) *MerchHandler {
 	return &MerchHandler{usecase: u} 
 }
 
