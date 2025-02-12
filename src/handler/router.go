@@ -2,19 +2,19 @@ package handler
 
 import ( 
     "github.com/gin-gonic/gin"
-    "github.com/AlekseyLapunov/Go-Merchandise-Store/usecase"
+    "github.com/AlekseyLapunov/Go-Merchandise-Store/src/usecase"
 )
 
-func NewRouter() *gin.Engine {
+func NewRouter(employeeUsecase usecase.EmployeeUsecase, merchUsecase usecase.MerchUsecase) *gin.Engine {
     router := gin.Default()
     router.Use(gin.Logger())
 
-    employeeHandler := NewEmployeeHandler(/*merchUsecase*/)
+    employeeHandler := NewEmployeeHandler(employeeUsecase)
     if employeeHandler == nil {
 
     }
 
-    merchHandler := NewMerchHandler(/*employeeUsecase*/)
+    merchHandler := NewMerchHandler(merchUsecase)
     if merchHandler == nil {
 
     }
@@ -22,16 +22,16 @@ func NewRouter() *gin.Engine {
     // no jwt
     authGroup := router.Group("/api")
     {
-        authGroup.POST("/auth", employeeHandler.Auth())
+        authGroup.POST("/auth", employeeHandler.Auth)
     }
 
     // jwt
     apiGroup := router.Group("/api")
     apiGroup.Use(/*middleware.Auth()*/)
     {
-        apiGroup.GET("/info" /*, TODO merchHandler info */)
-        apiGroup.GET("/sendCoin" /*, TODO merchHandler sendCoin*/ )
-        apiGroup.POST("/buy/:item" /*, TODO employeeHandler sendCoin*/ )
+        apiGroup.GET("/info",       merchHandler.Info)
+        apiGroup.GET("/sendCoin",   employeeHandler.SendCoin)
+        apiGroup.POST("/buy/:item", merchHandler.BuyItem)
     }
 
     return router

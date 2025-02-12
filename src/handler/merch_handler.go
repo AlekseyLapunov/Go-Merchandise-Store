@@ -2,7 +2,7 @@ package handler
 
 import ( 
 	"github.com/gin-gonic/gin"
-	"github.com/AlekseyLapunov/Go-Merchandise-Store/usecase"
+	"github.com/AlekseyLapunov/Go-Merchandise-Store/src/usecase"
 )
 
 type MerchHandler struct {
@@ -18,5 +18,5 @@ func (h *MerchHandler) Info(c *gin.Context) {
 }
 
 func (h *MerchHandler) BuyItem(c *gin.Context) {
-	
+
 }

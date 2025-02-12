@@ -2,7 +2,7 @@ package handler
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/AlekseyLapunov/Go-Merchandise-Store/usecase"
+	"github.com/AlekseyLapunov/Go-Merchandise-Store/src/usecase"
 )
 
 type EmployeeHandler struct {
@@ -18,5 +18,5 @@ func (h *EmployeeHandler) Auth(c *gin.Context) {
 }
 
 func (h *EmployeeHandler) SendCoin(c *gin.Context) {
-	
+
 }
