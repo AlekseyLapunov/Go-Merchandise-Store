@@ -3,6 +3,8 @@ package handler
 import ( 
     "github.com/gin-gonic/gin"
     "github.com/AlekseyLapunov/Go-Merchandise-Store/src/usecase"
+    "github.com/AlekseyLapunov/Go-Merchandise-Store/src/middleware"
+
 )
 
 func NewRouter(employeeUsecase *usecase.EmployeeUsecase, merchUsecase *usecase.MerchUsecase) *gin.Engine {
@@ -23,18 +25,16 @@ func NewRouter(employeeUsecase *usecase.EmployeeUsecase, merchUsecase *usecase.M
 
     }
 
-    // no jwt
     authGroup := router.Group("/api")
     {
         authGroup.POST("/auth", employeeHandler.Auth)
     }
 
-    // jwt
     apiGroup := router.Group("/api")
-    apiGroup.Use(/*middleware.Auth()*/)
+    apiGroup.Use(middleware.AuthJWT()) // jwt
     {
-        apiGroup.GET("/info",       merchHandler.Info)
-        apiGroup.GET("/sendCoin",   employeeHandler.SendCoin)
+        apiGroup.GET( "/info",      merchHandler.Info)
+        apiGroup.GET( "/sendCoin",  employeeHandler.SendCoin)
         apiGroup.POST("/buy/:item", merchHandler.BuyItem)
     }
 

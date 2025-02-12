@@ -2,7 +2,7 @@ package middleware
 
 import "github.com/gin-gonic/gin"
 
-func Auth() gin.HandlerFunc {
+func AuthJWT() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 
 	}
