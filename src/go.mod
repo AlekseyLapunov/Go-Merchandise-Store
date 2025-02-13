@@ -1,4 +1,4 @@
-module github.com/AlekseyLapunov/Go-Merchandise-Store
+module github.com/AlekseyLapunov/Go-Merchandise-Store/src
 
 go 1.23.5
 
