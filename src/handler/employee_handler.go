@@ -21,7 +21,7 @@ func (h *EmployeeHandler) Auth(ctx *gin.Context) {
     }
 
     if err := ctx.ShouldBindJSON(&req); err != nil {
-        ctx.JSON(http.StatusBadRequest, gin.H{"error": "invalid request"})
+        ctx.JSON(http.StatusBadRequest, gin.H{"error": "bad request"})
         return
     }
 
@@ -35,5 +35,31 @@ func (h *EmployeeHandler) Auth(ctx *gin.Context) {
 }
 
 func (h *EmployeeHandler) SendCoin(ctx *gin.Context) {
+    var req struct {
+        ToUser string `json:"toUser"`
+        Amount int    `json:"amount"`
+    }
 
+    if err := ctx.ShouldBindJSON(&req); err != nil {
+        ctx.JSON(http.StatusBadRequest, gin.H{"error": "bad request"})
+        return
+    }
+
+    senderID, exists := ctx.Get("employeeID")
+	if !exists {
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "wrong token"})
+	}
+
+	senderID_int, ok := senderID.(int)
+	if !ok {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "problem parsing senderID"})
+		return
+	}
+
+    if err := h.usecase.SendCoin(ctx.Request.Context(), senderID_int, req.ToUser, req.Amount); err != nil {
+        ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+        return
+    }
+
+    ctx.JSON(http.StatusOK, gin.H{"status": "operation successful"})
 }

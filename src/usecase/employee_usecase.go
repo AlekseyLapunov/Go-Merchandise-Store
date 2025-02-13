@@ -16,3 +16,7 @@ func NewEmployeeUsecase(s storage.EmployeeStorage) EmployeeUsecase {
 func (u EmployeeUsecase) Auth(ctx context.Context, username, password string) (string, error) {
 	return "", nil
 }
+
+func (u EmployeeUsecase) SendCoin(ctx context.Context, senderID int, toUser string, amount int) error {
+	return nil
+}
