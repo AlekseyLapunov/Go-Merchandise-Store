@@ -4,6 +4,6 @@ type EmployeeUsecase struct {
 	
 }
 
-func NewEmployeeUsecase() *EmployeeUsecase {
-	return &EmployeeUsecase{}
+func NewEmployeeUsecase() EmployeeUsecase {
+	return EmployeeUsecase{}
 }

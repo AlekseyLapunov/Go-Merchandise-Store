@@ -4,6 +4,6 @@ type MerchUsecase struct {
 	
 }
 
-func NewMerchUsecase() *MerchUsecase {
-	return &MerchUsecase{}
+func NewMerchUsecase() MerchUsecase {
+	return MerchUsecase{}
 }

@@ -7,11 +7,7 @@ import (
 
 )
 
-func NewRouter(employeeUsecase *usecase.EmployeeUsecase, merchUsecase *usecase.MerchUsecase) *gin.Engine {
-    if employeeUsecase == nil || merchUsecase == nil {
-        
-    }
-
+func NewRouter(employeeUsecase usecase.EmployeeUsecase, merchUsecase usecase.MerchUsecase) *gin.Engine {
     router := gin.Default()
     router.Use(gin.Logger())
 
