@@ -1,6 +1,11 @@
 package storage
 
-import "database/sql"
+import (
+	"context"
+	"database/sql"
+
+	"github.com/AlekseyLapunov/Go-Merchandise-Store/src/entity"
+)
 
 type EmployeeStorage struct {
 	db *sql.DB
@@ -10,3 +15,14 @@ func NewEmployeeStorage(db *sql.DB) EmployeeStorage {
 	return EmployeeStorage{db: db}
 }
 
+func (s *EmployeeStorage) GetBalance(ctx context.Context, employeeID int) (int, error) {
+	return 0, nil
+}
+
+func (s *EmployeeStorage) GetInventory(ctx context.Context, employeeID int) ([]entity.InventoryItem, error) {
+	return []entity.InventoryItem{}, nil
+}
+
+func (s *EmployeeStorage) GetCoinHistory(ctx context.Context, employeeID int) (*entity.CoinHistory, error) {
+	return nil, nil
+}

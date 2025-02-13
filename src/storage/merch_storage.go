@@ -1,6 +1,8 @@
 package storage
 
-import "database/sql"
+import (
+	"database/sql"
+)
 
 type MerchStorage struct {
 	db *sql.DB

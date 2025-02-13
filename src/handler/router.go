@@ -29,7 +29,7 @@ func NewRouter(employeeUsecase usecase.EmployeeUsecase, merchUsecase usecase.Mer
     apiGroup := router.Group("/api")
     apiGroup.Use(middleware.AuthJWT()) // jwt
     {
-        apiGroup.GET( "/info",      merchHandler.Info)
+        apiGroup.GET( "/info",      employeeHandler.Info)
         apiGroup.GET( "/sendCoin",  employeeHandler.SendCoin)
         apiGroup.POST("/buy/:item", merchHandler.BuyItem)
     }

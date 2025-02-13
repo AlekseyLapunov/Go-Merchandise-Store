@@ -34,6 +34,18 @@ func (h *EmployeeHandler) Auth(ctx *gin.Context) {
     ctx.JSON(http.StatusOK, gin.H{"token": token})
 }
 
+func (h *EmployeeHandler) Info(ctx *gin.Context) {
+    employeeID := ctx.GetInt("employeeID")
+
+    info, err := h.usecase.Info(ctx.Request.Context(), employeeID)
+    if err != nil {
+        ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+        return
+    }
+
+    ctx.JSON(http.StatusOK, info)
+}
+
 func (h *EmployeeHandler) SendCoin(ctx *gin.Context) {
     var req struct {
         ToUser string `json:"toUser"`
@@ -45,18 +57,9 @@ func (h *EmployeeHandler) SendCoin(ctx *gin.Context) {
         return
     }
 
-    senderID, exists := ctx.Get("employeeID")
-	if !exists {
-		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "Wrong token"})
-	}
+    senderID := ctx.GetInt("employeeID")
 
-	senderID_int, ok := senderID.(int)
-	if !ok {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Problem parsing senderID"})
-		return
-	}
-
-    if err := h.usecase.SendCoin(ctx.Request.Context(), senderID_int, req.ToUser, req.Amount); err != nil {
+    if err := h.usecase.SendCoin(ctx.Request.Context(), senderID, req.ToUser, req.Amount); err != nil {
         ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
         return
     }
