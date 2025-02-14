@@ -29,13 +29,9 @@ func (u MerchUsecase) BuyItem(ctx context.Context, employeeID int, item string) 
         return errors.New("not enough coins")
     }
 
-    if err := u.coinStorage.WithdrawCoins(ctx, employeeID, cost); err != nil {
-        return err
-    }
-
-    if err := u.storage.AddPurchase(ctx, employeeID, item); err != nil {
-        return err
-    }
+	if err := u.coinStorage.ProvidePurchase(ctx, employeeID, item, cost); err != nil {
+		return err
+	}
 
     return nil
 }

@@ -24,3 +24,7 @@ func (s *CoinStorage) ProvideOperation(ctx context.Context, senderID, receiverID
 func (s *CoinStorage) WithdrawCoins(ctx context.Context, employeeID, amount int) error {
 	return nil
 }
+
+func (s *CoinStorage) ProvidePurchase(ctx context.Context, employeeID int, item string, cost int) error {
+    return nil
+}
