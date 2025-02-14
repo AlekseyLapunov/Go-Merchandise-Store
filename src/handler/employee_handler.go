@@ -1,17 +1,17 @@
 package handler
 
 import (
-	"github.com/gin-gonic/gin"
-	"github.com/AlekseyLapunov/Go-Merchandise-Store/src/usecase"
-	"net/http"
+    "github.com/gin-gonic/gin"
+    "github.com/AlekseyLapunov/Go-Merchandise-Store/src/usecase"
+    "net/http"
 )
 
 type EmployeeHandler struct {
-	usecase usecase.EmployeeUsecase
+    usecase usecase.EmployeeUsecase
 }
 
 func NewEmployeeHandler(u usecase.EmployeeUsecase) *EmployeeHandler {
-	return &EmployeeHandler{usecase: u}
+    return &EmployeeHandler{usecase: u}
 }
 
 func (h *EmployeeHandler) Auth(ctx *gin.Context) {

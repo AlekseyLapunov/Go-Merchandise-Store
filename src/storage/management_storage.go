@@ -1,21 +1,21 @@
 package storage
 
 import (
-	"context"
-	"database/sql"
-	"github.com/AlekseyLapunov/Go-Merchandise-Store/src/entity"
+    "context"
+    "database/sql"
+    "github.com/AlekseyLapunov/Go-Merchandise-Store/src/entity"
 )
 
 type ManagementStorage struct {
-	db *sql.DB
+    db *sql.DB
 }
 
 func NewManagementStorage(db *sql.DB) ManagementStorage {
-	return ManagementStorage{db: db}
+    return ManagementStorage{db: db}
 }
 
 func (s *ManagementStorage) GetCoins(ctx context.Context, employeeID int) (int, error) {
-	return 0, nil
+    return 0, nil
 }
 
 func (s *ManagementStorage) GetInventory(ctx context.Context, employeeID int) ([]entity.InventoryItem, error) {
@@ -27,7 +27,7 @@ func (s *ManagementStorage) GetCoinHistory(ctx context.Context, employeeID int) 
 }
 
 func (s *ManagementStorage) WithdrawCoins(ctx context.Context, employeeID, amount int) error {
-	return nil
+    return nil
 }
 
 func (s *ManagementStorage) ProvidePurchase(ctx context.Context, employeeID int, item string, cost int) error {
@@ -39,5 +39,5 @@ func (s *ManagementStorage) ProvideOperation(ctx context.Context, senderID, rece
 }
 
 func (s *ManagementStorage) AddPurchase(ctx context.Context, employeeID int, item string) error {
-	return nil
+    return nil
 }

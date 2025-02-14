@@ -1,17 +1,17 @@
 package handler
 
 import ( 
-	"github.com/gin-gonic/gin"
-	"github.com/AlekseyLapunov/Go-Merchandise-Store/src/usecase"
+    "github.com/gin-gonic/gin"
+    "github.com/AlekseyLapunov/Go-Merchandise-Store/src/usecase"
     "net/http"
 )
 
 type MerchHandler struct {
-	usecase usecase.MerchUsecase
+    usecase usecase.MerchUsecase
 }
 
 func NewMerchHandler(u usecase.MerchUsecase) *MerchHandler {
-	return &MerchHandler{usecase: u} 
+    return &MerchHandler{usecase: u} 
 }
 
 func (h *MerchHandler) BuyItem(ctx *gin.Context) {

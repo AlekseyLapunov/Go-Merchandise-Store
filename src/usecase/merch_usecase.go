@@ -1,18 +1,18 @@
 package usecase
 
 import (
-	"github.com/AlekseyLapunov/Go-Merchandise-Store/src/storage"
-	"context"
-	"errors"
+    "github.com/AlekseyLapunov/Go-Merchandise-Store/src/storage"
+    "context"
+    "errors"
 )
 
 type MerchUsecase struct {
-	storage           storage.MerchStorage
-	managementStorage storage.ManagementStorage
+    storage           storage.MerchStorage
+    managementStorage storage.ManagementStorage
 }
 
 func NewMerchUsecase(s storage.MerchStorage, c storage.ManagementStorage) MerchUsecase {
-	return MerchUsecase{storage: s, managementStorage: c}
+    return MerchUsecase{storage: s, managementStorage: c}
 }
 
 func (u MerchUsecase) BuyItem(ctx context.Context, employeeID int, item string) error {
@@ -29,9 +29,9 @@ func (u MerchUsecase) BuyItem(ctx context.Context, employeeID int, item string) 
         return errors.New("not enough coins")
     }
 
-	if err := u.managementStorage.ProvidePurchase(ctx, employeeID, item, cost); err != nil {
-		return err
-	}
+    if err := u.managementStorage.ProvidePurchase(ctx, employeeID, item, cost); err != nil {
+        return err
+    }
 
     return nil
 }

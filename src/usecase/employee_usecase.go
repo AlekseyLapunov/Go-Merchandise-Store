@@ -1,21 +1,21 @@
 package usecase
 
 import (
-	"context"
-	"errors"
+    "context"
+    "errors"
     "github.com/golang-jwt/jwt/v5"
     "golang.org/x/crypto/bcrypt"
-	"github.com/AlekseyLapunov/Go-Merchandise-Store/src/entity"
-	"github.com/AlekseyLapunov/Go-Merchandise-Store/src/storage"
+    "github.com/AlekseyLapunov/Go-Merchandise-Store/src/entity"
+    "github.com/AlekseyLapunov/Go-Merchandise-Store/src/storage"
 )
 
 type EmployeeUsecase struct {
-	storage           storage.EmployeeStorage
+    storage           storage.EmployeeStorage
     managementStorage storage.ManagementStorage
 }
 
 func NewEmployeeUsecase(s storage.EmployeeStorage, c storage.ManagementStorage) EmployeeUsecase {
-	return EmployeeUsecase{storage: s, managementStorage: c}
+    return EmployeeUsecase{storage: s, managementStorage: c}
 }
 
 func (u *EmployeeUsecase) Auth(ctx context.Context, login, password string) (string, error) {
@@ -55,10 +55,10 @@ func (u *EmployeeUsecase) Info(ctx context.Context, employeeID int) (*entity.Inf
     if err != nil {
         return nil, err
     }
-	
-	if coinHistory == nil {
-		return nil, errors.New("coinHistory ptr was nil")
-	}
+    
+    if coinHistory == nil {
+        return nil, errors.New("coinHistory ptr was nil")
+    }
 
     return &entity.InfoResponse{
         Coins:       balance,

@@ -1,14 +1,14 @@
 package middleware
 
 import (
-	"net/http"
-	"github.com/gin-gonic/gin"
-	"github.com/golang-jwt/jwt/v5"
-	"strings"
+    "net/http"
+    "github.com/gin-gonic/gin"
+    "github.com/golang-jwt/jwt/v5"
+    "strings"
 )
 
 func AuthJWT() gin.HandlerFunc {
-	return func(ctx *gin.Context) {
+    return func(ctx *gin.Context) {
         header := ctx.GetHeader("Authorization")
         if header == "" {
             ctx.JSON(http.StatusUnauthorized, gin.H{"error": "Authorization header is required"})
@@ -49,6 +49,6 @@ func AuthJWT() gin.HandlerFunc {
         ctx.Set("employeeID", employeeID)
 
         ctx.Next()
-	}
+    }
 }
 

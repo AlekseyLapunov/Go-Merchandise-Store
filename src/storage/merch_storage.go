@@ -1,16 +1,16 @@
 package storage
 
 import (
-	"context"
-	"database/sql"
+    "context"
+    "database/sql"
 )
 
 type MerchStorage struct {
-	db *sql.DB
+    db *sql.DB
 }
 
 func NewMerchStorage(db *sql.DB) MerchStorage {
-	return MerchStorage{db: db}
+    return MerchStorage{db: db}
 }
 
 func (s *MerchStorage) GetMerchCost(ctx context.Context, item string) (int, error) {
