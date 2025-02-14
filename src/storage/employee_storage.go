@@ -3,7 +3,6 @@ package storage
 import (
     "context"
     "database/sql"
-
     "github.com/AlekseyLapunov/Go-Merchandise-Store/src/entity"
 )
 
@@ -15,18 +14,14 @@ func NewEmployeeStorage(db *sql.DB) EmployeeStorage {
     return EmployeeStorage{db: db}
 }
 
-func (s *EmployeeStorage) GetEmployeeByLogin(ctx context.Context, login string) (*entity.Employee, error) {
-    return nil, nil
+func (s *EmployeeStorage) GetEmployee(ctx context.Context, login string) (*entity.Employee, error) {
+    var employee entity.Employee
+
+    err := s.db.QueryRowContext(ctx, "SELECT id, login, password, coins FROM employees WHERE login = $1", login).Scan(
+        &employee.ID, &employee.Login, &employee.Login, &employee.Password, &employee.Coins,
+    )
+
+    return &employee, err
 }
 
-func (s *EmployeeStorage) GetBalance(ctx context.Context, employeeID int) (int, error) {
-    return 0, nil
-}
-
-func (s *EmployeeStorage) GetInventory(ctx context.Context, employeeID int) ([]entity.InventoryItem, error) {
-    return []entity.InventoryItem{}, nil
-}
-
-func (s *EmployeeStorage) GetCoinHistory(ctx context.Context, employeeID int) (*entity.CoinHistory, error) {
-    return nil, nil
-}
+// register employee

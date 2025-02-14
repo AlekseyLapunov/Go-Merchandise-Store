@@ -19,7 +19,7 @@ func NewEmployeeUsecase(s storage.EmployeeStorage, c storage.ManagementStorage) 
 }
 
 func (u *EmployeeUsecase) Auth(ctx context.Context, login, password string) (string, error) {
-    employee, err := u.storage.GetEmployeeByLogin(ctx, login)
+    employee, err := u.storage.GetEmployee(ctx, login)
     if err != nil {
         return "", errors.New("invalid credentials")
     }
@@ -41,17 +41,17 @@ func (u *EmployeeUsecase) Auth(ctx context.Context, login, password string) (str
 }
 
 func (u *EmployeeUsecase) Info(ctx context.Context, employeeID int) (*entity.InfoResponse, error) {
-    balance, err := u.storage.GetBalance(ctx, employeeID)
+    balance, err := u.managementStorage.GetCoins(ctx, employeeID)
     if err != nil {
         return nil, err
     }
 
-    inventory, err := u.storage.GetInventory(ctx, employeeID)
+    inventory, err := u.managementStorage.GetInventory(ctx, employeeID)
     if err != nil {
         return nil, err
     }
 
-    coinHistory, err := u.storage.GetCoinHistory(ctx, employeeID)
+    coinHistory, err := u.managementStorage.GetCoinHistory(ctx, employeeID)
     if err != nil {
         return nil, err
     }
@@ -72,7 +72,7 @@ func (u *EmployeeUsecase) SendCoin(ctx context.Context, senderID int, toUser str
         return errors.New("negative coins amount prohibited"), false
     }
 
-    balance, err := u.storage.GetBalance(ctx, senderID)
+    balance, err := u.managementStorage.GetCoins(ctx, senderID)
     if err != nil {
         return err, true
     }
@@ -81,7 +81,7 @@ func (u *EmployeeUsecase) SendCoin(ctx context.Context, senderID int, toUser str
         return errors.New("not enough coins"), false
     }
 
-    receiver, err := u.storage.GetEmployeeByLogin(ctx, toUser)
+    receiver, err := u.storage.GetEmployee(ctx, toUser)
     if err != nil || receiver == nil {
         return errors.New("receiver not found"), true
     }

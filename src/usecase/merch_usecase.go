@@ -16,12 +16,12 @@ func NewMerchUsecase(s storage.MerchStorage, c storage.ManagementStorage) MerchU
 }
 
 func (u MerchUsecase) BuyItem(ctx context.Context, employeeID int, item string) error {
-    cost, err := u.storage.GetMerchPrice(ctx, item)
+    cost, err := u.storage.GetMerchCost(ctx, item)
     if err != nil {
         return errors.New("item not found")
     }
 
-    balance, err := u.managementStorage.GetBalance(ctx, employeeID)
+    balance, err := u.managementStorage.GetCoins(ctx, employeeID)
     if err != nil {
         return err
     }
