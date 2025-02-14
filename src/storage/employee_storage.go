@@ -30,7 +30,3 @@ func (s *EmployeeStorage) GetInventory(ctx context.Context, employeeID int) ([]e
 func (s *EmployeeStorage) GetCoinHistory(ctx context.Context, employeeID int) (*entity.CoinHistory, error) {
 	return nil, nil
 }
-
-func (s *EmployeeStorage) ProvideOperation(ctx context.Context, senderID, receiverID, amount int) error {
-    return nil
-}

@@ -6,13 +6,14 @@ import (
 )
 
 type MerchUsecase struct {
-	storage storage.MerchStorage
+	coinStorage storage.CoinStorage
+	storage     storage.MerchStorage
 }
 
-func NewMerchUsecase(s storage.MerchStorage) MerchUsecase {
-	return MerchUsecase{storage: s}
+func NewMerchUsecase(s storage.MerchStorage, c storage.CoinStorage) MerchUsecase {
+	return MerchUsecase{storage: s, coinStorage: c}
 }
 
 func (u MerchUsecase) BuyItem(ctx context.Context, employeeID int, item string) error {
-	return nil
+    return nil
 }

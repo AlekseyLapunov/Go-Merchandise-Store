@@ -17,9 +17,10 @@ func main() {
 
     employeeStorage := storage.NewEmployeeStorage(db)
     merchStorage    := storage.NewMerchStorage(db)
+    coinStorage     := storage.NewCoinStorage(db)
 
-    employeeUsecase := usecase.NewEmployeeUsecase(employeeStorage)
-    merchUsecase    := usecase.NewMerchUsecase(merchStorage)
+    employeeUsecase := usecase.NewEmployeeUsecase(employeeStorage, coinStorage)
+    merchUsecase    := usecase.NewMerchUsecase(merchStorage, coinStorage)
 
     router := handler.NewRouter(employeeUsecase, merchUsecase)
 

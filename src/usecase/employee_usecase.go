@@ -11,10 +11,11 @@ import (
 
 type EmployeeUsecase struct {
 	storage storage.EmployeeStorage
+    coinStorage storage.CoinStorage
 }
 
-func NewEmployeeUsecase(s storage.EmployeeStorage) EmployeeUsecase {
-	return EmployeeUsecase{storage: s}
+func NewEmployeeUsecase(s storage.EmployeeStorage, c storage.CoinStorage) EmployeeUsecase {
+	return EmployeeUsecase{storage: s, coinStorage: c}
 }
 
 func (u *EmployeeUsecase) Auth(ctx context.Context, login, password string) (string, error) {
@@ -85,7 +86,7 @@ func (u *EmployeeUsecase) SendCoin(ctx context.Context, senderID int, toUser str
         return errors.New("receiver not found"), true
     }
 
-    if err := u.storage.ProvideOperation(ctx, senderID, receiver.ID, amount); err != nil {
+    if err := u.coinStorage.ProvideOperation(ctx, senderID, receiver.ID, amount); err != nil {
         return err, true
     }
 
