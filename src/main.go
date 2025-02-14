@@ -15,12 +15,12 @@ func main() {
     }
     defer db.Close()
 
-    employeeStorage := storage.NewEmployeeStorage(db)
-    merchStorage    := storage.NewMerchStorage(db)
-    coinStorage     := storage.NewCoinStorage(db)
+    employeeStorage   := storage.NewEmployeeStorage(db)
+    merchStorage      := storage.NewMerchStorage(db)
+    managementStorage := storage.NewManagementStorage(db)
 
-    employeeUsecase := usecase.NewEmployeeUsecase(employeeStorage, coinStorage)
-    merchUsecase    := usecase.NewMerchUsecase(merchStorage, coinStorage)
+    employeeUsecase := usecase.NewEmployeeUsecase(employeeStorage, managementStorage)
+    merchUsecase    := usecase.NewMerchUsecase(merchStorage, managementStorage)
 
     router := handler.NewRouter(employeeUsecase, merchUsecase)
 

@@ -7,11 +7,11 @@ import (
 )
 
 type MerchUsecase struct {
-	coinStorage storage.CoinStorage
+	coinStorage storage.ManagementStorage
 	storage     storage.MerchStorage
 }
 
-func NewMerchUsecase(s storage.MerchStorage, c storage.CoinStorage) MerchUsecase {
+func NewMerchUsecase(s storage.MerchStorage, c storage.ManagementStorage) MerchUsecase {
 	return MerchUsecase{storage: s, coinStorage: c}
 }
 
