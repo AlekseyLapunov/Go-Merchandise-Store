@@ -7,12 +7,12 @@ import (
 )
 
 type MerchUsecase struct {
-	coinStorage storage.ManagementStorage
-	storage     storage.MerchStorage
+	storage           storage.MerchStorage
+	managementStorage storage.ManagementStorage
 }
 
 func NewMerchUsecase(s storage.MerchStorage, c storage.ManagementStorage) MerchUsecase {
-	return MerchUsecase{storage: s, coinStorage: c}
+	return MerchUsecase{storage: s, managementStorage: c}
 }
 
 func (u MerchUsecase) BuyItem(ctx context.Context, employeeID int, item string) error {
@@ -21,7 +21,7 @@ func (u MerchUsecase) BuyItem(ctx context.Context, employeeID int, item string) 
         return errors.New("item not found")
     }
 
-    balance, err := u.coinStorage.GetBalance(ctx, employeeID)
+    balance, err := u.managementStorage.GetBalance(ctx, employeeID)
     if err != nil {
         return err
     }
@@ -29,7 +29,7 @@ func (u MerchUsecase) BuyItem(ctx context.Context, employeeID int, item string) 
         return errors.New("not enough coins")
     }
 
-	if err := u.coinStorage.ProvidePurchase(ctx, employeeID, item, cost); err != nil {
+	if err := u.managementStorage.ProvidePurchase(ctx, employeeID, item, cost); err != nil {
 		return err
 	}
 
