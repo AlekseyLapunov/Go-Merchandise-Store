@@ -1,7 +1,7 @@
 package entity
 
 type Merch struct {
-	ID   int
+    ID   int
     Name string
     Cost int
 }
