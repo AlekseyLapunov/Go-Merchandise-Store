@@ -21,3 +21,6 @@ func (s *CoinStorage) ProvideOperation(ctx context.Context, senderID, receiverID
     return nil
 }
 
+func (s *CoinStorage) WithdrawCoins(ctx context.Context, employeeID, amount int) error {
+	return nil
+}
