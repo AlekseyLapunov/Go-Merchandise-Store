@@ -59,8 +59,14 @@ func (h *EmployeeHandler) SendCoin(ctx *gin.Context) {
 
     senderID := ctx.GetInt("employeeID")
 
-    if err := h.usecase.SendCoin(ctx.Request.Context(), senderID, req.ToUser, req.Amount); err != nil {
-        ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+    if err, isInternal := h.usecase.SendCoin(ctx.Request.Context(), senderID, req.ToUser, req.Amount); err != nil {
+        
+        if isInternal {
+            ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+        } else {
+            ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+        }
+        
         return
     }
 

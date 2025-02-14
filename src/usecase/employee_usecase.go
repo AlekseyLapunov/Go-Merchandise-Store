@@ -3,7 +3,8 @@ package usecase
 import (
 	"context"
 	"errors"
-
+    "github.com/golang-jwt/jwt/v5"
+    "golang.org/x/crypto/bcrypt"
 	"github.com/AlekseyLapunov/Go-Merchandise-Store/src/entity"
 	"github.com/AlekseyLapunov/Go-Merchandise-Store/src/storage"
 )
@@ -16,8 +17,26 @@ func NewEmployeeUsecase(s storage.EmployeeStorage) EmployeeUsecase {
 	return EmployeeUsecase{storage: s}
 }
 
-func (u *EmployeeUsecase) Auth(ctx context.Context, username, password string) (string, error) {
-	return "", nil
+func (u *EmployeeUsecase) Auth(ctx context.Context, login, password string) (string, error) {
+    employee, err := u.storage.GetEmployeeByLogin(ctx, login)
+    if err != nil {
+        return "", errors.New("invalid credentials")
+    }
+    
+    if err := bcrypt.CompareHashAndPassword([]byte(employee.Password), []byte(password)); err != nil {
+        return "", errors.New("invalid credentials")
+    }
+
+    token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
+        "employeeID": employee.ID,
+    })
+
+    tokenString, err := token.SignedString([]byte("todo-gen-secret"))
+    if err != nil {
+        return "", errors.New("failed to generate token")
+    }
+
+    return tokenString, nil
 }
 
 func (u *EmployeeUsecase) Info(ctx context.Context, employeeID int) (*entity.InfoResponse, error) {
@@ -47,6 +66,28 @@ func (u *EmployeeUsecase) Info(ctx context.Context, employeeID int) (*entity.Inf
     }, nil
 }
 
-func (u *EmployeeUsecase) SendCoin(ctx context.Context, senderID int, toUser string, amount int) error {
-	return nil
+func (u *EmployeeUsecase) SendCoin(ctx context.Context, senderID int, toUser string, amount int) (e error, isInternal bool) {
+    if amount < 0 {
+        return errors.New("negative coins amount prohibited"), false
+    }
+
+    balance, err := u.storage.GetBalance(ctx, senderID)
+    if err != nil {
+        return err, true
+    }
+
+    if balance < amount {
+        return errors.New("not enough coins"), false
+    }
+
+    receiver, err := u.storage.GetEmployeeByLogin(ctx, toUser)
+    if err != nil || receiver == nil {
+        return errors.New("receiver not found"), true
+    }
+
+    if err := u.storage.ProvideOperation(ctx, senderID, receiver.ID, amount); err != nil {
+        return err, true
+    }
+
+    return nil, false
 }
