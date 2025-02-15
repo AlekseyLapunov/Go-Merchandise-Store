@@ -2,8 +2,9 @@ package mockery
 
 import (
 	"context"
-	"github.com/stretchr/testify/mock"
+
 	"github.com/AlekseyLapunov/Go-Merchandise-Store/src/entity"
+	"github.com/stretchr/testify/mock"
 )
 
 func unused(...interface{}) {}
@@ -42,18 +43,18 @@ type MockManagementStorage struct {
 }
 
 func (m *MockManagementStorage) GetCoins(ctx context.Context, employeeID int) (int, error) {
-	unused(ctx, employeeID)
-	return 0, nil
+	args := m.Called(ctx, employeeID)
+	return args.Int(0), args.Error(1)
 }
 
 func (m *MockManagementStorage) GetInventory(ctx context.Context, employeeID int) ([]entity.InventoryItem, error) {
-	unused(ctx, employeeID)
-	return nil, nil
+	args := m.Called(ctx, employeeID)
+	return args.Get(0).([]entity.InventoryItem), args.Error(1)
 }
 
 func (m *MockManagementStorage) GetCoinHistory(ctx context.Context, employeeID int) (*entity.CoinHistory, error) {
-	unused(ctx, employeeID)
-	return nil, nil
+	args := m.Called(ctx, employeeID)
+	return args.Get(0).(*entity.CoinHistory), args.Error(1)
 }
 
 func (m *MockManagementStorage) ProvidePurchase(ctx context.Context, employeeID int, item string, cost int) error {
