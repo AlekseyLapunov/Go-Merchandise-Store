@@ -38,7 +38,7 @@ func main() {
     merchStorage      := storage.NewMerchStorage(db)
     managementStorage := storage.NewManagementStorage(db)
 
-    employeeUsecase := usecase.NewEmployeeUsecase(employeeStorage, managementStorage)
+    employeeUsecase := usecase.NewEmployeeUsecase(&employeeStorage, &managementStorage)
     merchUsecase    := usecase.NewMerchUsecase(merchStorage, managementStorage)
 
     router := handler.NewRouter(employeeUsecase, merchUsecase)
