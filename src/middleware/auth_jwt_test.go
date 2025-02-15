@@ -11,13 +11,6 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-// Мок FetchSecretJWT для тестов
-func mockFetchSecretJWT(secret string, err error) func() (string, error) {
-    return func() (string, error) {
-        return secret, err
-    }
-}
-
 type TestCase struct {
     name           string
     authHeader     string
