@@ -57,7 +57,7 @@ func (h *EmployeeHandler) SendCoin(ctx *gin.Context) {
     }
 
     if err := ctx.ShouldBindJSON(&req); err != nil {
-        ctx.JSON(http.StatusBadRequest, gin.H{"error": "Bad request"})
+        ctx.JSON(http.StatusBadRequest, gin.H{"error": "bad request format"})
         log.Println(err.Error())
         return
     }
@@ -76,5 +76,5 @@ func (h *EmployeeHandler) SendCoin(ctx *gin.Context) {
         return
     }
 
-    ctx.JSON(http.StatusOK, gin.H{"status": "Operation successful"})
+    ctx.JSON(http.StatusOK, gin.H{"status": "operation successful"})
 }

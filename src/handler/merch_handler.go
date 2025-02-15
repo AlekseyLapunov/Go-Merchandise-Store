@@ -18,7 +18,7 @@ func NewMerchHandler(u usecase.MerchUsecase) *MerchHandler {
 func (h *MerchHandler) BuyItem(ctx *gin.Context) {
     item := ctx.Param("item")
     if item == "" {
-        ctx.JSON(http.StatusBadRequest, gin.H{"error": "Bad request"})
+        ctx.JSON(http.StatusBadRequest, gin.H{"error": "bad request format"})
         return
     }
 
@@ -34,5 +34,5 @@ func (h *MerchHandler) BuyItem(ctx *gin.Context) {
         return
     }
 
-    ctx.JSON(http.StatusOK, gin.H{"status": "Operation successful"})
+    ctx.JSON(http.StatusOK, gin.H{"status": "operation successful"})
 }

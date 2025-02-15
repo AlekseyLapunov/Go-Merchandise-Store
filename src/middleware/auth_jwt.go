@@ -15,21 +15,21 @@ func AuthJWT() gin.HandlerFunc {
     return func(ctx *gin.Context) {
         header := ctx.GetHeader("Authorization")
         if header == "" {
-            ctx.JSON(http.StatusUnauthorized, gin.H{"error": "Authorization header is required"})
+            ctx.JSON(http.StatusUnauthorized, gin.H{"error": "authorization header is required"})
             ctx.Abort()
             return
         }
 
         authParts := strings.Split(header, " ")
         if len(authParts) != 2 || authParts[0] != "BearerAuth" {
-            ctx.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid authorization header format"})
+            ctx.JSON(http.StatusUnauthorized, gin.H{"error": "invalid authorization header format"})
             ctx.Abort()
             return
         }
 
         secretJWT, err := FetchSecretJWT()
         if err != nil {
-            ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Something went wrong on our side"})
+            ctx.JSON(http.StatusInternalServerError, gin.H{"error": "something went wrong on our side"})
             ctx.Abort()
             log.Println(err.Error())
             return
@@ -39,7 +39,7 @@ func AuthJWT() gin.HandlerFunc {
             return []byte(secretJWT), nil
         })
         if err != nil || !token.Valid {
-            ctx.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid token"})
+            ctx.JSON(http.StatusUnauthorized, gin.H{"error": "invalid token"})
             ctx.Abort()
             log.Println(err.Error())
             return
@@ -47,21 +47,21 @@ func AuthJWT() gin.HandlerFunc {
 
         claims, ok := token.Claims.(jwt.MapClaims)
         if !ok {
-            ctx.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid token claims"})
+            ctx.JSON(http.StatusUnauthorized, gin.H{"error": "invalid token claims"})
             ctx.Abort()
             return
         }
 
         employeeIDstr, ok := claims["employeeID"].(string)
         if !ok {
-            ctx.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid employee ID in token"})
+            ctx.JSON(http.StatusUnauthorized, gin.H{"error": "invalid employee ID in token"})
             ctx.Abort()
             return
         }
 
         employeeID, err := strconv.Atoi(employeeIDstr)
         if err != nil {
-            ctx.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid employee ID format in token"})
+            ctx.JSON(http.StatusUnauthorized, gin.H{"error": "invalid employee ID format in token"})
             ctx.Abort()
             log.Println(err.Error())
             return
