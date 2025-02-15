@@ -1,9 +1,14 @@
 package main
 
 import (
+    "context"
     "database/sql"
     "log"
     "os"
+    "os/signal"
+    "syscall"
+    "time"
+    "net/http"
     "github.com/AlekseyLapunov/Go-Merchandise-Store/src/handler"
     "github.com/AlekseyLapunov/Go-Merchandise-Store/src/usecase"
     "github.com/AlekseyLapunov/Go-Merchandise-Store/src/storage"
@@ -37,8 +42,29 @@ func main() {
     merchUsecase    := usecase.NewMerchUsecase(merchStorage, managementStorage)
 
     router := handler.NewRouter(employeeUsecase, merchUsecase)
-
-    if err := router.Run(":8080"); err != nil {
-        // TODO graceful shutdown
+    server := &http.Server{
+        Addr:    ":8080",
+        Handler: router,
     }
+
+    done := make(chan os.Signal, 1)
+    signal.Notify(done, os.Interrupt, syscall.SIGINT, syscall.SIGTERM)
+
+    go func() {
+        if err := server.ListenAndServe(); err != nil && err != http.ErrServerClosed {
+            log.Fatalf("Failed to start server: %v", err)
+        }
+    }()
+    log.Println("Server started on :8080")
+
+    <-done
+    log.Println("Server is shutting down...")
+
+    ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+    defer cancel()
+
+    if err := server.Shutdown(ctx); err != nil {
+        log.Fatalf("Server shutdown failed: %v", err)
+    }
+    log.Println("Server stopped gracefully")
 }
