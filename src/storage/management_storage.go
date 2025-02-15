@@ -72,7 +72,40 @@ func (s *ManagementStorage) GetCoinHistory(ctx context.Context, employeeID int) 
 }
 
 func (s *ManagementStorage) ProvidePurchase(ctx context.Context, employeeID int, item string, cost int) error {
-    return nil
+    tx, err := s.db.BeginTx(ctx, nil)
+    if err != nil {
+        return err
+    }
+    defer tx.Rollback()
+
+    _, err = tx.ExecContext(ctx, `
+        UPDATE employees 
+        SET coins = coins - $1 
+        WHERE id = $2 AND coins >= $1
+    `, cost, employeeID)
+    if err != nil {
+        return err
+    }
+
+    var merchID int
+    err = tx.QueryRowContext(ctx, `
+        SELECT id 
+        FROM merch 
+        WHERE name = $1
+    `, item).Scan(&merchID)
+    if err != nil {
+        return err
+    }
+
+    _, err = tx.ExecContext(ctx, `
+        INSERT INTO purchases (user_id, merch_id) 
+        VALUES ($1, $2)
+    `, employeeID, merchID)
+    if err != nil {
+        return err
+    }
+
+    return tx.Commit()
 }
 
 func (s *ManagementStorage) ProvideOperation(ctx context.Context, senderID, receiverID, amount int) error {
