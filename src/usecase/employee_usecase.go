@@ -15,11 +15,11 @@ import (
 )
 
 type EmployeeUsecase struct {
-    storage           storage.EmployeeStorage
-    managementStorage storage.ManagementStorage
+    storage           storage.IEmployeeStorage
+    managementStorage storage.IManagementStorage
 }
 
-func NewEmployeeUsecase(s storage.EmployeeStorage, c storage.ManagementStorage) EmployeeUsecase {
+func NewEmployeeUsecase(s storage.IEmployeeStorage, c storage.IManagementStorage) EmployeeUsecase {
     return EmployeeUsecase{storage: s, managementStorage: c}
 }
 
