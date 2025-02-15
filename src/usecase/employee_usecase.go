@@ -7,6 +7,7 @@ import (
     "golang.org/x/crypto/bcrypt"
     "github.com/AlekseyLapunov/Go-Merchandise-Store/src/entity"
     "github.com/AlekseyLapunov/Go-Merchandise-Store/src/storage"
+    "github.com/AlekseyLapunov/Go-Merchandise-Store/src/middleware"
 )
 
 type EmployeeUsecase struct {
@@ -32,7 +33,13 @@ func (u *EmployeeUsecase) Auth(ctx context.Context, login, password string) (str
         "employeeID": employee.ID,
     })
 
-    tokenString, err := token.SignedString([]byte("todo-gen-secret"))
+
+    secretJWT, err := middleware.FetchSecretJWT()
+    if err != nil {
+        return "", err
+    }
+
+    tokenString, err := token.SignedString([]byte(secretJWT))
     if err != nil {
         return "", errors.New("failed to generate token")
     }

@@ -1,10 +1,12 @@
 package middleware
 
 import (
-    "net/http"
-    "github.com/gin-gonic/gin"
-    "github.com/golang-jwt/jwt/v5"
-    "strings"
+	"fmt"
+	"net/http"
+	"os"
+	"strings"
+	"github.com/gin-gonic/gin"
+	"github.com/golang-jwt/jwt/v5"
 )
 
 func AuthJWT() gin.HandlerFunc {
@@ -23,8 +25,15 @@ func AuthJWT() gin.HandlerFunc {
             return
         }
 
+        secretJWT, err := FetchSecretJWT()
+        if err != nil {
+            ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Something went wrong on our side"})
+            ctx.Abort()
+            return
+        }
+
         token, err := jwt.Parse(authParts[1], func(token *jwt.Token) (interface{}, error) {
-            return []byte("todo-gen-secret"), nil
+            return []byte(secretJWT), nil
         })
         if err != nil || !token.Valid {
             ctx.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid token"})
@@ -50,5 +59,15 @@ func AuthJWT() gin.HandlerFunc {
 
         ctx.Next()
     }
+}
+
+func FetchSecretJWT() (string, error) {
+    const ENV_JWT_SECRET = "JWT_SECRET"
+
+    jwt_secret := os.Getenv(ENV_JWT_SECRET)
+    if jwt_secret == "" {
+        return "", fmt.Errorf("\"%s\" environment variable is not set", ENV_JWT_SECRET)
+    }
+    return jwt_secret, nil
 }
 
