@@ -5,6 +5,7 @@ go 1.23.5
 require github.com/gin-gonic/gin v1.10.0
 
 require (
+	github.com/DATA-DOG/go-sqlmock v1.3.0
 	github.com/golang-jwt/jwt/v5 v5.2.1
 	github.com/lib/pq v1.10.9
 	github.com/stretchr/testify v1.9.0
