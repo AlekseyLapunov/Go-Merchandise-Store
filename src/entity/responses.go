@@ -12,7 +12,17 @@ type InventoryItem struct {
 }
 
 type CoinHistory struct {
+    Received []RecvEntry `json:"received"`
+    Sent     []SentEntry `json:"sent"`
+}
+
+type RecvEntry struct {
     FromUser string `json:"fromUser"`
     Amount   int    `json:"amount"`
+}
+
+type SentEntry struct {
+    ToUser string `json:"toUser"`
+    Amount int    `json:"amount"`
 }
 
