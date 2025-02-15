@@ -79,10 +79,6 @@ func (s *ManagementStorage) ProvideOperation(ctx context.Context, senderID, rece
     return nil
 }
 
-func (s *ManagementStorage) AddPurchase(ctx context.Context, employeeID int, item string) error {
-    return nil
-}
-
 func (s *ManagementStorage) fetchReceivedHistory(ctx context.Context, receiverID int) ([]entity.RecvEntry, error) {
     rows, err := s.db.QueryContext(ctx, `
         SELECT e.login, o.amount 
