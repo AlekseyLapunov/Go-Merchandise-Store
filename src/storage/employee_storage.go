@@ -1,9 +1,11 @@
 package storage
 
 import (
-    "context"
-    "database/sql"
-    "github.com/AlekseyLapunov/Go-Merchandise-Store/src/entity"
+	"context"
+	"database/sql"
+	"errors"
+    "golang.org/x/crypto/bcrypt"
+	"github.com/AlekseyLapunov/Go-Merchandise-Store/src/entity"
 )
 
 type EmployeeStorage struct {
@@ -24,4 +26,47 @@ func (s *EmployeeStorage) GetEmployee(ctx context.Context, login string) (*entit
     return &employee, err
 }
 
-// register employee
+func (s *EmployeeStorage) GetEmployeeOrRegister(ctx context.Context, login, password string) (*entity.Employee, error) {
+    employee, err := s.GetEmployee(ctx, login)
+
+    if employee != nil && err == nil {
+        return employee, nil
+    }
+
+    var regErr error
+    if errors.Is(err, sql.ErrNoRows) {
+        employee, regErr = s.registerEmployee(ctx, login, password)
+    } else {
+        return nil, err
+    }
+
+    if regErr != nil {
+        return employee, regErr
+    }
+
+    return employee, nil
+}
+
+func (s *EmployeeStorage) registerEmployee(ctx context.Context, login, password string) (*entity.Employee, error) {
+    hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
+    if err != nil {
+        return nil, err
+    }
+
+    var employee entity.Employee
+    employee.Login    = login
+    employee.Password = string(hashedPassword)
+    employee.Coins    = 1000
+
+    err = s.db.QueryRowContext(ctx, `
+        INSERT INTO employees (login, password, coins) 
+        VALUES ($1, $2, $3)
+        RETURNING id
+    `, employee.Login, employee.Password, employee.Coins).Scan(&employee.ID)
+    if err != nil {
+        return nil, err
+    }
+
+    return &employee, nil
+}
+

@@ -20,9 +20,9 @@ func NewEmployeeUsecase(s storage.EmployeeStorage, c storage.ManagementStorage) 
 }
 
 func (u *EmployeeUsecase) Auth(ctx context.Context, login, password string) (string, error) {
-    employee, err := u.storage.GetEmployee(ctx, login)
+    employee, err := u.storage.GetEmployeeOrRegister(ctx, login, password)
     if err != nil {
-        return "", errors.New("invalid credentials")
+        return "", err
     }
     
     if err := bcrypt.CompareHashAndPassword([]byte(employee.Password), []byte(password)); err != nil {
