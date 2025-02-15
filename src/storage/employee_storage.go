@@ -8,6 +8,15 @@ import (
 	"github.com/AlekseyLapunov/Go-Merchandise-Store/src/entity"
 )
 
+type IEmployeeStorage interface {
+    GetEmployee(ctx context.Context, login string) (*entity.Employee, error)
+    GetEmployeeID(ctx context.Context, login string) (int, error)
+    GetEmployeeLogin(ctx context.Context, employeeID int) (string, error)
+    GetEmployeeOrRegister(ctx context.Context, login, password string) (*entity.Employee, error)
+
+    RegisterEmployee(ctx context.Context, login, password string) (*entity.Employee, error)
+}
+
 type EmployeeStorage struct {
     db *sql.DB
 }
@@ -51,7 +60,7 @@ func (s *EmployeeStorage) GetEmployeeOrRegister(ctx context.Context, login, pass
 
     var regErr error
     if errors.Is(err, sql.ErrNoRows) {
-        employee, regErr = s.registerEmployee(ctx, login, password)
+        employee, regErr = s.RegisterEmployee(ctx, login, password)
     } else {
         return nil, err
     }
@@ -63,7 +72,7 @@ func (s *EmployeeStorage) GetEmployeeOrRegister(ctx context.Context, login, pass
     return employee, nil
 }
 
-func (s *EmployeeStorage) registerEmployee(ctx context.Context, login, password string) (*entity.Employee, error) {
+func (s *EmployeeStorage) RegisterEmployee(ctx context.Context, login, password string) (*entity.Employee, error) {
     hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
     if err != nil {
         return nil, err

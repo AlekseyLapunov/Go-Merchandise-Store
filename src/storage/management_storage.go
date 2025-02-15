@@ -6,6 +6,17 @@ import (
     "github.com/AlekseyLapunov/Go-Merchandise-Store/src/entity"
 )
 
+type IManagementStorage interface {
+    GetCoins(ctx context.Context, employeeID int) (int, error)
+    GetInventory(ctx context.Context, employeeID int) ([]entity.InventoryItem, error)
+    GetCoinHistory(ctx context.Context, employeeID int) (*entity.CoinHistory, error)
+    ProvidePurchase(ctx context.Context, employeeID int, item string, cost int) error
+    ProvideOperation(ctx context.Context, senderID, receiverID, amount int) error
+
+    FetchReceivedHistory(ctx context.Context, receiverID int) ([]entity.RecvEntry, error)
+    FetchSentHistory(ctx context.Context, senderID int) ([]entity.SentEntry, error)
+}
+
 type ManagementStorage struct {
     db *sql.DB
 }
@@ -56,12 +67,12 @@ func (s *ManagementStorage) GetInventory(ctx context.Context, employeeID int) ([
 func (s *ManagementStorage) GetCoinHistory(ctx context.Context, employeeID int) (*entity.CoinHistory, error) {
     var received []entity.RecvEntry
     var err error
-    if received, err = s.fetchReceivedHistory(ctx, employeeID); err != nil {
+    if received, err = s.FetchReceivedHistory(ctx, employeeID); err != nil {
         return nil, err
     }
 
     var sent []entity.SentEntry
-    if sent, err = s.fetchSentHistory(ctx, employeeID); err != nil {
+    if sent, err = s.FetchSentHistory(ctx, employeeID); err != nil {
         return nil, err
     }
 
@@ -144,7 +155,7 @@ func (s *ManagementStorage) ProvideOperation(ctx context.Context, senderID, rece
     return tx.Commit()
 }
 
-func (s *ManagementStorage) fetchReceivedHistory(ctx context.Context, receiverID int) ([]entity.RecvEntry, error) {
+func (s *ManagementStorage) FetchReceivedHistory(ctx context.Context, receiverID int) ([]entity.RecvEntry, error) {
     rows, err := s.db.QueryContext(ctx, `
         SELECT e.login, o.amount 
         FROM operations AS o
@@ -172,7 +183,7 @@ func (s *ManagementStorage) fetchReceivedHistory(ctx context.Context, receiverID
     return received, nil  
 }
 
-func (s *ManagementStorage) fetchSentHistory(ctx context.Context, senderID int) ([]entity.SentEntry, error) {
+func (s *ManagementStorage) FetchSentHistory(ctx context.Context, senderID int) ([]entity.SentEntry, error) {
     rows, err := s.db.QueryContext(ctx, `
         SELECT e.login, o.amount 
         FROM operations AS o
