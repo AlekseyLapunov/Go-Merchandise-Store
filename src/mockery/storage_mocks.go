@@ -58,21 +58,30 @@ func (m *MockManagementStorage) GetCoinHistory(ctx context.Context, employeeID i
 }
 
 func (m *MockManagementStorage) ProvidePurchase(ctx context.Context, employeeID int, item string, cost int) error {
-	unused(ctx, employeeID, item, cost)
-	return nil
+	args := m.Called(ctx, employeeID, item, cost)
+	return args.Error(0)
 }
 
 func (m *MockManagementStorage) ProvideOperation(ctx context.Context, senderID, receiverID, amount int) error {
-	unused(ctx, senderID, receiverID, amount)
-	return nil
+	args := m.Called(ctx, senderID, receiverID, amount)
+	return args.Error(0)
 }
 
 func (m *MockManagementStorage) FetchReceivedHistory(ctx context.Context, receiverID int) ([]entity.RecvEntry, error) {
-	unused(ctx, receiverID)
-	return nil, nil
+	args := m.Called(ctx, receiverID)
+	return args.Get(0).([]entity.RecvEntry), args.Error(1)
 }
 
 func (m *MockManagementStorage) FetchSentHistory(ctx context.Context, senderID int) ([]entity.SentEntry, error) {
-	unused(ctx, senderID)
-	return nil, nil
+	args := m.Called(ctx, senderID)
+	return args.Get(0).([]entity.SentEntry), args.Error(1)
+}
+
+type MockMerchStorage struct {
+	mock.Mock
+}
+
+func (m *MockMerchStorage) GetMerchCost(ctx context.Context, item string) (int, error) {
+	args := m.Called(ctx, item)
+	return args.Get(0).(int), args.Error(1)
 }

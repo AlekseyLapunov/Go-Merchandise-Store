@@ -39,7 +39,7 @@ func main() {
     managementStorage := storage.NewManagementStorage(db)
 
     employeeUsecase := usecase.NewEmployeeUsecase(&employeeStorage, &managementStorage)
-    merchUsecase    := usecase.NewMerchUsecase(merchStorage, managementStorage)
+    merchUsecase    := usecase.NewMerchUsecase(&merchStorage, &managementStorage)
 
     router := handler.NewRouter(employeeUsecase, merchUsecase)
     server := &http.Server{

@@ -5,7 +5,6 @@ import (
 	"errors"
 	"os"
 	"testing"
-
 	"github.com/AlekseyLapunov/Go-Merchandise-Store/src/entity"
 	"github.com/AlekseyLapunov/Go-Merchandise-Store/src/mockery"
 	"github.com/AlekseyLapunov/Go-Merchandise-Store/src/usecase"

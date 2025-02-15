@@ -5,6 +5,10 @@ import (
     "database/sql"
 )
 
+type IMerchStorage interface {
+    GetMerchCost(ctx context.Context, item string) (int, error)
+}
+
 type MerchStorage struct {
     db *sql.DB
 }
