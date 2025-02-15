@@ -9,6 +9,10 @@ import (
 	"github.com/AlekseyLapunov/Go-Merchandise-Store/src/storage"
 )
 
+type IMerchUsecase interface {
+    BuyItem(ctx context.Context, employeeID int, item string) (err error, isInternal bool)
+}
+
 type MerchUsecase struct {
     storage           storage.IMerchStorage
     managementStorage storage.IManagementStorage
@@ -18,7 +22,7 @@ func NewMerchUsecase(s storage.IMerchStorage, c storage.IManagementStorage) Merc
     return MerchUsecase{storage: s, managementStorage: c}
 }
 
-func (u MerchUsecase) BuyItem(ctx context.Context, employeeID int, item string) (err error, isInternal bool) {
+func (u *MerchUsecase) BuyItem(ctx context.Context, employeeID int, item string) (err error, isInternal bool) {
     errString := "problem buying item (on our side)"
 
     cost, err := u.storage.GetMerchCost(ctx, item)

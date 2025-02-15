@@ -7,18 +7,11 @@ import (
 
 )
 
-func NewRouter(employeeUsecase usecase.EmployeeUsecase, merchUsecase usecase.MerchUsecase) *gin.Engine {
+func NewRouter(employeeUsecase usecase.IEmployeeUsecase, merchUsecase usecase.IMerchUsecase) *gin.Engine {
     router := gin.Default()
 
     employeeHandler := NewEmployeeHandler(employeeUsecase)
-    if employeeHandler == nil {
-
-    }
-
     merchHandler := NewMerchHandler(merchUsecase)
-    if merchHandler == nil {
-
-    }
 
     authGroup := router.Group("/api")
     {

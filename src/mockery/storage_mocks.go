@@ -2,7 +2,6 @@ package mockery
 
 import (
 	"context"
-
 	"github.com/AlekseyLapunov/Go-Merchandise-Store/src/entity"
 	"github.com/stretchr/testify/mock"
 )

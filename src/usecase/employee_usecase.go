@@ -14,6 +14,12 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
+type IEmployeeUsecase interface {
+    Auth(ctx context.Context, login, password string) (string, error)
+    Info(ctx context.Context, employeeID int) (*entity.InfoResponse, error)
+    SendCoin(ctx context.Context, senderID int, toUser string, amount int) (e error, isInternal bool)
+}
+
 type EmployeeUsecase struct {
     storage           storage.IEmployeeStorage
     managementStorage storage.IManagementStorage

@@ -41,7 +41,7 @@ func main() {
     employeeUsecase := usecase.NewEmployeeUsecase(&employeeStorage, &managementStorage)
     merchUsecase    := usecase.NewMerchUsecase(&merchStorage, &managementStorage)
 
-    router := handler.NewRouter(employeeUsecase, merchUsecase)
+    router := handler.NewRouter(&employeeUsecase, &merchUsecase)
     server := &http.Server{
         Addr:    ":8080",
         Handler: router,
