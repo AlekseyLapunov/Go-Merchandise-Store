@@ -1,12 +1,12 @@
 package usecase
 
 import (
-	"context"
-	"database/sql"
-	"errors"
-	"log"
+    "context"
+    "database/sql"
+    "errors"
+    "log"
 
-	"github.com/AlekseyLapunov/Go-Merchandise-Store/src/storage"
+    "github.com/AlekseyLapunov/Go-Merchandise-Store/src/storage"
 )
 
 type IMerchUsecase interface {

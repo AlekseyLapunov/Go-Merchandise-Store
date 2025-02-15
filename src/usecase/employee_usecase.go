@@ -1,17 +1,17 @@
 package usecase
 
 import (
-	"context"
-	"database/sql"
-	"errors"
-	"log"
-	"strconv"
+    "context"
+    "database/sql"
+    "errors"
+    "log"
+    "strconv"
 
-	"github.com/AlekseyLapunov/Go-Merchandise-Store/src/entity"
-	"github.com/AlekseyLapunov/Go-Merchandise-Store/src/middleware"
-	"github.com/AlekseyLapunov/Go-Merchandise-Store/src/storage"
-	"github.com/golang-jwt/jwt/v5"
-	"golang.org/x/crypto/bcrypt"
+    "github.com/AlekseyLapunov/Go-Merchandise-Store/src/entity"
+    "github.com/AlekseyLapunov/Go-Merchandise-Store/src/middleware"
+    "github.com/AlekseyLapunov/Go-Merchandise-Store/src/storage"
+    "github.com/golang-jwt/jwt/v5"
+    "golang.org/x/crypto/bcrypt"
 )
 
 type IEmployeeUsecase interface {

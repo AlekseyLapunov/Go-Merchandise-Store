@@ -1,10 +1,10 @@
 package handler
 
 import (
-	"log"
-	"net/http"
-	"github.com/AlekseyLapunov/Go-Merchandise-Store/src/usecase"
-	"github.com/gin-gonic/gin"
+    "log"
+    "net/http"
+    "github.com/AlekseyLapunov/Go-Merchandise-Store/src/usecase"
+    "github.com/gin-gonic/gin"
 )
 
 type EmployeeHandler struct {

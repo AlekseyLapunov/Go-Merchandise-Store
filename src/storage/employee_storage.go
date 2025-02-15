@@ -1,11 +1,11 @@
 package storage
 
 import (
-	"context"
-	"database/sql"
-	"errors"
+    "context"
+    "database/sql"
+    "errors"
     "golang.org/x/crypto/bcrypt"
-	"github.com/AlekseyLapunov/Go-Merchandise-Store/src/entity"
+    "github.com/AlekseyLapunov/Go-Merchandise-Store/src/entity"
 )
 
 type IEmployeeStorage interface {
