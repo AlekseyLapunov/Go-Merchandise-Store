@@ -46,7 +46,7 @@ func TestGetInventory(t *testing.T) {
         SELECT m\.name, COUNT\(p\.id\)
         FROM purchases AS p
         JOIN merch AS m ON p\.merch_id = m\.id
-        WHERE p\.user_id = \$1
+        WHERE p\.emp_id = \$1
         GROUP BY m\.name`).
             WithArgs(1).
                 WillReturnRows(rows)
@@ -132,8 +132,8 @@ func TestFetchReceivedHistory(t *testing.T) {
 
     mock.ExpectQuery(`
         SELECT e\.login, o\.amount
-        FROM operations AS o JOIN employees AS e ON o\.send_user_id = e\.id
-        WHERE o\.recv_user_id = \$1
+        FROM operations AS o JOIN employees AS e ON o\.send_emp_id = e\.id
+        WHERE o\.recv_emp_id = \$1
     `).
         WithArgs(2).
             WillReturnRows(sqlmock.NewRows([]string{"login", "amount"}).
@@ -164,8 +164,8 @@ func TestFetchSentHistory(t *testing.T) {
 
     mock.ExpectQuery(`
         SELECT e\.login, o\.amount
-        FROM operations AS o JOIN employees AS e ON o\.recv_user_id = e\.id
-        WHERE o\.send_user_id = \$1
+        FROM operations AS o JOIN employees AS e ON o\.recv_emp_id = e\.id
+        WHERE o\.send_emp_id = \$1
     `).
         WithArgs(1).
             WillReturnRows(sqlmock.NewRows([]string{"login", "amount"}).

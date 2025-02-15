@@ -38,7 +38,7 @@ func (s *ManagementStorage) GetInventory(ctx context.Context, employeeID int) ([
         SELECT m.name, COUNT(p.id) 
         FROM purchases AS p
         JOIN merch AS m ON p.merch_id = m.id
-        WHERE p.user_id = $1
+        WHERE p.emp_id = $1
         GROUP BY m.name
     `, employeeID)
     if err != nil {
@@ -109,7 +109,7 @@ func (s *ManagementStorage) ProvidePurchase(ctx context.Context, employeeID int,
     }
 
     _, err = tx.ExecContext(ctx, `
-        INSERT INTO purchases (user_id, merch_id) 
+        INSERT INTO purchases (emp_id, merch_id) 
         VALUES ($1, $2)
     `, employeeID, merchID)
     if err != nil {
@@ -145,7 +145,7 @@ func (s *ManagementStorage) ProvideOperation(ctx context.Context, senderID, rece
     }
 
     _, err = tx.ExecContext(ctx, `
-        INSERT INTO operations (send_user_id, recv_user_id, amount) 
+        INSERT INTO operations (send_emp_id, recv_emp_id, amount) 
         VALUES ($1, $2, $3)
     `, senderID, receiverID, amount)
     if err != nil {
@@ -159,8 +159,8 @@ func (s *ManagementStorage) FetchReceivedHistory(ctx context.Context, receiverID
     rows, err := s.db.QueryContext(ctx, `
         SELECT e.login, o.amount 
         FROM operations AS o
-        JOIN employees AS e ON o.send_user_id = e.id
-        WHERE o.recv_user_id = $1
+        JOIN employees AS e ON o.send_emp_id = e.id
+        WHERE o.recv_emp_id = $1
     `, receiverID)
     if err != nil {
         return nil, err
@@ -187,8 +187,8 @@ func (s *ManagementStorage) FetchSentHistory(ctx context.Context, senderID int) 
     rows, err := s.db.QueryContext(ctx, `
         SELECT e.login, o.amount 
         FROM operations AS o
-        JOIN employees AS e ON o.recv_user_id = e.id
-        WHERE o.send_user_id = $1
+        JOIN employees AS e ON o.recv_emp_id = e.id
+        WHERE o.send_emp_id = $1
     `, senderID)
     if err != nil {
         return nil, err
