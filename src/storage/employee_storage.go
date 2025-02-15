@@ -26,6 +26,22 @@ func (s *EmployeeStorage) GetEmployee(ctx context.Context, login string) (*entit
     return &employee, err
 }
 
+func (s *EmployeeStorage) GetEmployeeID(ctx context.Context, login string) (int, error) {
+    var id int
+
+    err := s.db.QueryRowContext(ctx, "SELECT id FROM employees WHERE login = $1", login).Scan(&id)
+
+    return id, err
+}
+
+func (s *EmployeeStorage) GetEmployeeLogin(ctx context.Context, employeeID int) (string, error) {
+    var login string
+
+    err := s.db.QueryRowContext(ctx, "SELECT login FROM employees WHERE id = $1", employeeID).Scan(&login)
+
+    return login, err
+}
+
 func (s *EmployeeStorage) GetEmployeeOrRegister(ctx context.Context, login, password string) (*entity.Employee, error) {
     employee, err := s.GetEmployee(ctx, login)
 

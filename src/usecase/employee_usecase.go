@@ -1,14 +1,17 @@
 package usecase
 
 import (
-    "context"
-    "errors"
-    "strconv"
-    "github.com/golang-jwt/jwt/v5"
-    "golang.org/x/crypto/bcrypt"
-    "github.com/AlekseyLapunov/Go-Merchandise-Store/src/entity"
-    "github.com/AlekseyLapunov/Go-Merchandise-Store/src/storage"
-    "github.com/AlekseyLapunov/Go-Merchandise-Store/src/middleware"
+	"context"
+	"database/sql"
+	"errors"
+	"log"
+	"strconv"
+
+	"github.com/AlekseyLapunov/Go-Merchandise-Store/src/entity"
+	"github.com/AlekseyLapunov/Go-Merchandise-Store/src/middleware"
+	"github.com/AlekseyLapunov/Go-Merchandise-Store/src/storage"
+	"github.com/golang-jwt/jwt/v5"
+	"golang.org/x/crypto/bcrypt"
 )
 
 type EmployeeUsecase struct {
@@ -21,9 +24,12 @@ func NewEmployeeUsecase(s storage.EmployeeStorage, c storage.ManagementStorage) 
 }
 
 func (u *EmployeeUsecase) Auth(ctx context.Context, login, password string) (string, error) {
+    errString := "auth went wrong on our side"
+
     employee, err := u.storage.GetEmployeeOrRegister(ctx, login, password)
     if err != nil {
-        return "", err
+        log.Println(err)
+        return "", errors.New(errString)
     }
     
     if err := bcrypt.CompareHashAndPassword([]byte(employee.Password), []byte(password)); err != nil {
@@ -36,35 +42,43 @@ func (u *EmployeeUsecase) Auth(ctx context.Context, login, password string) (str
 
     secretJWT, err := middleware.FetchSecretJWT()
     if err != nil {
-        return "", err
+        log.Println(err)
+        return "", errors.New(errString)
     }
 
     tokenString, err := token.SignedString([]byte(secretJWT))
     if err != nil {
-        return "", errors.New("failed to generate token")
+        log.Println(err)
+        return "", errors.New(errString)
     }
 
     return tokenString, nil
 }
 
 func (u *EmployeeUsecase) Info(ctx context.Context, employeeID int) (*entity.InfoResponse, error) {
+    errString := "trouble getting information (on our side)"
+
     balance, err := u.managementStorage.GetCoins(ctx, employeeID)
     if err != nil {
-        return nil, err
+        log.Println(err.Error())
+        return nil, errors.New(errString)
     }
 
     inventory, err := u.managementStorage.GetInventory(ctx, employeeID)
     if err != nil {
-        return nil, err
+        log.Println(err.Error())
+        return nil, errors.New(errString)
     }
 
     coinHistory, err := u.managementStorage.GetCoinHistory(ctx, employeeID)
     if err != nil {
-        return nil, err
+        log.Println(err.Error())
+        return nil, errors.New(errString)
     }
     
     if coinHistory == nil {
-        return nil, errors.New("coinHistory ptr was nil")
+        log.Println("coinHistory ptr was nil")
+        return nil, errors.New(errString)
     }
 
     return &entity.InfoResponse{
@@ -75,26 +89,43 @@ func (u *EmployeeUsecase) Info(ctx context.Context, employeeID int) (*entity.Inf
 }
 
 func (u *EmployeeUsecase) SendCoin(ctx context.Context, senderID int, toUser string, amount int) (e error, isInternal bool) {
+    errString := "trouble sending coins (on our side)"
+
     if amount < 0 {
         return errors.New("negative coins amount prohibited"), false
     }
 
     balance, err := u.managementStorage.GetCoins(ctx, senderID)
     if err != nil {
-        return err, true
+        log.Println(err.Error())
+        return errors.New(errString), true
     }
 
     if balance < amount {
         return errors.New("not enough coins"), false
     }
 
-    receiver, err := u.storage.GetEmployee(ctx, toUser)
-    if err != nil || receiver == nil {
-        return errors.New("receiver not found"), true
+    senderLogin, err := u.storage.GetEmployeeLogin(ctx, senderID)
+    if err != nil {
+        return errors.New(errString), true
     }
 
-    if err := u.managementStorage.ProvideOperation(ctx, senderID, receiver.ID, amount); err != nil {
-        return err, true
+    if senderLogin == toUser {
+        return errors.New("can't send coins to yourself"), false
+    }
+
+    receiverID, err := u.storage.GetEmployeeID(ctx, toUser)
+    if err != nil {
+        if errors.Is(err, sql.ErrNoRows) {
+            return errors.New("receiver user name not found"), false
+        } else {
+            return errors.New(errString), true
+        }
+    }
+
+    if err := u.managementStorage.ProvideOperation(ctx, senderID, receiverID, amount); err != nil {
+        log.Println(err.Error())
+        return errors.New(errString), true
     }
 
     return nil, false
