@@ -15,7 +15,11 @@ func NewManagementStorage(db *sql.DB) ManagementStorage {
 }
 
 func (s *ManagementStorage) GetCoins(ctx context.Context, employeeID int) (int, error) {
-    return 0, nil
+    var coins int
+
+    err := s.db.QueryRowContext(ctx, "SELECT coins FROM employees WHERE id = $1", employeeID).Scan(&coins)
+
+    return coins, err
 }
 
 func (s *ManagementStorage) GetInventory(ctx context.Context, employeeID int) ([]entity.InventoryItem, error) {
