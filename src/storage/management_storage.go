@@ -26,10 +26,6 @@ func (s *ManagementStorage) GetCoinHistory(ctx context.Context, employeeID int) 
     return nil, nil
 }
 
-func (s *ManagementStorage) WithdrawCoins(ctx context.Context, employeeID, amount int) error {
-    return nil
-}
-
 func (s *ManagementStorage) ProvidePurchase(ctx context.Context, employeeID int, item string, cost int) error {
     return nil
 }
