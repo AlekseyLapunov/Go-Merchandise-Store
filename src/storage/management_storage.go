@@ -109,7 +109,39 @@ func (s *ManagementStorage) ProvidePurchase(ctx context.Context, employeeID int,
 }
 
 func (s *ManagementStorage) ProvideOperation(ctx context.Context, senderID, receiverID, amount int) error {
-    return nil
+    tx, err := s.db.BeginTx(ctx, nil)
+    if err != nil {
+        return err
+    }
+    defer tx.Rollback()
+
+    _, err = tx.ExecContext(ctx, `
+        UPDATE employees 
+        SET coins = coins - $1 
+        WHERE id = $2 AND coins >= $1
+    `, amount, senderID)
+    if err != nil {
+        return err
+    }
+
+    _, err = tx.ExecContext(ctx, `
+        UPDATE employees 
+        SET coins = coins + $1 
+        WHERE id = $2
+    `, amount, receiverID)
+    if err != nil {
+        return err
+    }
+
+    _, err = tx.ExecContext(ctx, `
+        INSERT INTO operations (send_user_id, recv_user_id, amount) 
+        VALUES ($1, $2, $3)
+    `, senderID, receiverID, amount)
+    if err != nil {
+        return err
+    }
+
+    return tx.Commit()
 }
 
 func (s *ManagementStorage) fetchReceivedHistory(ctx context.Context, receiverID int) ([]entity.RecvEntry, error) {
