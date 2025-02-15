@@ -5,6 +5,8 @@ import (
 	"net/http"
 	"os"
 	"strings"
+    "strconv"
+    "log"
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v5"
 )
@@ -19,7 +21,7 @@ func AuthJWT() gin.HandlerFunc {
         }
 
         authParts := strings.Split(header, " ")
-        if len(authParts) != 2 || authParts[0] != "Bearer" {
+        if len(authParts) != 2 || authParts[0] != "BearerAuth" {
             ctx.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid authorization header format"})
             ctx.Abort()
             return
@@ -29,6 +31,7 @@ func AuthJWT() gin.HandlerFunc {
         if err != nil {
             ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Something went wrong on our side"})
             ctx.Abort()
+            log.Println(err.Error())
             return
         }
 
@@ -38,6 +41,7 @@ func AuthJWT() gin.HandlerFunc {
         if err != nil || !token.Valid {
             ctx.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid token"})
             ctx.Abort()
+            log.Println(err.Error())
             return
         }
 
@@ -48,10 +52,18 @@ func AuthJWT() gin.HandlerFunc {
             return
         }
 
-        employeeID, ok := claims["employeeID"].(int)
+        employeeIDstr, ok := claims["employeeID"].(string)
         if !ok {
             ctx.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid employee ID in token"})
             ctx.Abort()
+            return
+        }
+
+        employeeID, err := strconv.Atoi(employeeIDstr)
+        if err != nil {
+            ctx.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid employee ID format in token"})
+            ctx.Abort()
+            log.Println(err.Error())
             return
         }
 

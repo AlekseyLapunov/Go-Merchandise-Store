@@ -20,7 +20,7 @@ func (s *EmployeeStorage) GetEmployee(ctx context.Context, login string) (*entit
     var employee entity.Employee
 
     err := s.db.QueryRowContext(ctx, "SELECT id, login, password, coins FROM employees WHERE login = $1", login).Scan(
-        &employee.ID, &employee.Login, &employee.Login, &employee.Password, &employee.Coins,
+        &employee.ID, &employee.Login, &employee.Password, &employee.Coins,
     )
 
     return &employee, err

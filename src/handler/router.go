@@ -9,7 +9,6 @@ import (
 
 func NewRouter(employeeUsecase usecase.EmployeeUsecase, merchUsecase usecase.MerchUsecase) *gin.Engine {
     router := gin.Default()
-    router.Use(gin.Logger())
 
     employeeHandler := NewEmployeeHandler(employeeUsecase)
     if employeeHandler == nil {
@@ -30,8 +29,8 @@ func NewRouter(employeeUsecase usecase.EmployeeUsecase, merchUsecase usecase.Mer
     apiGroup.Use(middleware.AuthJWT()) // jwt
     {
         apiGroup.GET( "/info",      employeeHandler.Info)
-        apiGroup.GET( "/sendCoin",  employeeHandler.SendCoin)
-        apiGroup.POST("/buy/:item", merchHandler.BuyItem)
+        apiGroup.POST("/sendCoin",  employeeHandler.SendCoin)
+        apiGroup.GET( "/buy/:item", merchHandler.BuyItem)
     }
 
     return router

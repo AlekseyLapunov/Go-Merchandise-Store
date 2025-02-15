@@ -1,6 +1,7 @@
 package handler
 
-import ( 
+import (
+    "log"
     "github.com/gin-gonic/gin"
     "github.com/AlekseyLapunov/Go-Merchandise-Store/src/usecase"
     "net/http"
@@ -23,8 +24,13 @@ func (h *MerchHandler) BuyItem(ctx *gin.Context) {
 
     employeeID := ctx.GetInt("employeeID")
 
-    if err := h.usecase.BuyItem(ctx.Request.Context(), employeeID, item); err != nil {
-        ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+    if err, isInternal := h.usecase.BuyItem(ctx.Request.Context(), employeeID, item); err != nil {
+        if isInternal {
+            ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+        } else {
+            ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+        }
+        log.Println(err.Error())
         return
     }
 

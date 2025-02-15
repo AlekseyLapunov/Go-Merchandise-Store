@@ -1,9 +1,10 @@
 package handler
 
 import (
-    "github.com/gin-gonic/gin"
-    "github.com/AlekseyLapunov/Go-Merchandise-Store/src/usecase"
-    "net/http"
+	"log"
+	"net/http"
+	"github.com/AlekseyLapunov/Go-Merchandise-Store/src/usecase"
+	"github.com/gin-gonic/gin"
 )
 
 type EmployeeHandler struct {
@@ -22,12 +23,14 @@ func (h *EmployeeHandler) Auth(ctx *gin.Context) {
 
     if err := ctx.ShouldBindJSON(&req); err != nil {
         ctx.JSON(http.StatusBadRequest, gin.H{"error": "bad request"})
+        log.Println(err.Error())
         return
     }
 
     token, err := h.usecase.Auth(ctx.Request.Context(), req.Username, req.Password)
     if err != nil {
         ctx.JSON(http.StatusUnauthorized, gin.H{"error": "invalid credentials"})
+        log.Println(err.Error())
         return
     }
 
@@ -40,6 +43,7 @@ func (h *EmployeeHandler) Info(ctx *gin.Context) {
     info, err := h.usecase.Info(ctx.Request.Context(), employeeID)
     if err != nil {
         ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+        log.Println(err.Error())
         return
     }
 
@@ -54,6 +58,7 @@ func (h *EmployeeHandler) SendCoin(ctx *gin.Context) {
 
     if err := ctx.ShouldBindJSON(&req); err != nil {
         ctx.JSON(http.StatusBadRequest, gin.H{"error": "Bad request"})
+        log.Println(err.Error())
         return
     }
 
@@ -66,6 +71,7 @@ func (h *EmployeeHandler) SendCoin(ctx *gin.Context) {
         } else {
             ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
         }
+        log.Println(err.Error())
         
         return
     }

@@ -3,6 +3,7 @@ package usecase
 import (
     "context"
     "errors"
+    "strconv"
     "github.com/golang-jwt/jwt/v5"
     "golang.org/x/crypto/bcrypt"
     "github.com/AlekseyLapunov/Go-Merchandise-Store/src/entity"
@@ -30,9 +31,8 @@ func (u *EmployeeUsecase) Auth(ctx context.Context, login, password string) (str
     }
 
     token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
-        "employeeID": employee.ID,
+        "employeeID": strconv.Itoa(employee.ID),
     })
-
 
     secretJWT, err := middleware.FetchSecretJWT()
     if err != nil {
