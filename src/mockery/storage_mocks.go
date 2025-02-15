@@ -24,13 +24,13 @@ func (m *MockEmployeeStorage) GetEmployeeOrRegister(ctx context.Context, login, 
 }
 
 func (m *MockEmployeeStorage) GetEmployeeID(ctx context.Context, login string) (int, error) {
-	unused(ctx, login)
-	return 0, nil
+	args := m.Called(ctx, login)
+	return args.Int(0), args.Error(1)
 }
 
 func (m *MockEmployeeStorage) GetEmployeeLogin(ctx context.Context, employeeID int) (string, error) {
-	unused(ctx, employeeID)
-	return "", nil
+	args := m.Called(ctx, employeeID)
+	return args.String(0), args.Error(1)
 }
 
 func (m *MockEmployeeStorage) RegisterEmployee(ctx context.Context, login, password string) (*entity.Employee, error) {

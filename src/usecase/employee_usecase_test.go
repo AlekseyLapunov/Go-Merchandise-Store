@@ -60,21 +60,21 @@ func TestEmployeeUsecase_Info(t *testing.T) {
 	u := usecase.NewEmployeeUsecase(nil, mockStorage)
 	ctx := context.Background()
 	employeeID := 1
-	mockStorage.On("GetCoins", ctx, employeeID).Return(100, nil).Once()
+	mockStorage.On("GetCoins", ctx, employeeID).Return(100, nil)
 	mockStorage.On("GetInventory", ctx, employeeID).Return(
         []entity.InventoryItem{
             {Type: "t-shirt", Quantity: 10},
             {Type: "book",    Quantity: 5 },
         },
         nil,
-    ).Once()
+    )
 	mockStorage.On("GetCoinHistory", ctx, employeeID).Return(
 		&entity.CoinHistory {
 			Received: []entity.RecvEntry{{FromUser: "aleksey", Amount: 5}, {FromUser: "sveta", Amount: 45}},
             Sent:     []entity.SentEntry{{ToUser: "maksim", Amount: 10}},
 		},
 		nil,
-	).Once()
+	)
 
 	info, err := u.Info(ctx, employeeID)
 	assert.NoError(t, err)
@@ -86,6 +86,7 @@ func TestEmployeeUsecase_Info(t *testing.T) {
 	assert.Len(t, info.CoinHistory.Received, 2)
     assert.Len(t, info.CoinHistory.Sent, 1)
 
+    mockStorage.ExpectedCalls = nil
 	mockErrStr := "internal db error"
 	mockStorage.On("GetCoins", ctx, employeeID).Return(0, errors.New(mockErrStr))
 	_, err = u.Info(ctx, employeeID)
@@ -102,4 +103,48 @@ func TestEmployeeUsecase_Info(t *testing.T) {
 	mockStorage.On("GetCoinHistory", ctx, employeeID).Return((*entity.CoinHistory)(nil), nil)
 	_, err = u.Info(ctx, employeeID)
 	assert.Error(t, err)
+}
+
+func TestEmployeeUsecase_SendCoin(t *testing.T) {
+	mockManagementStorage := new(mockery.MockManagementStorage)
+	mockEmployeeStorage := new(mockery.MockEmployeeStorage)
+	u := usecase.NewEmployeeUsecase(mockEmployeeStorage, mockManagementStorage)
+	ctx := context.Background()
+	senderID := 1
+	receiverLogin := "receiver"
+	receiverID := 2
+	amount := 50
+
+	mockManagementStorage.On("GetCoins", ctx, senderID).Return(100, nil)
+	mockEmployeeStorage.On("GetEmployeeLogin", ctx, senderID).Return("sender", nil)
+	mockEmployeeStorage.On("GetEmployeeID", ctx, receiverLogin).Return(receiverID, nil)
+	mockManagementStorage.On("ProvideOperation", ctx, senderID, receiverID, amount).Return(nil)
+
+	err, isInternal := u.SendCoin(ctx, senderID, receiverLogin, amount)
+	assert.NoError(t, err)
+	assert.False(t, isInternal)
+
+    mockManagementStorage.ExpectedCalls = nil
+	mockManagementStorage.On("GetCoins", ctx, senderID).Return(40, nil)
+	err, _ = u.SendCoin(ctx, senderID, receiverLogin, amount)
+	assert.Error(t, err)
+
+	mockEmployeeStorage.On("GetEmployeeLogin", ctx, senderID).Return(receiverLogin, nil)
+	err, _ = u.SendCoin(ctx, senderID, receiverLogin, amount)
+	assert.Error(t, err)
+
+    mockManagementStorage.ExpectedCalls = nil
+	mockManagementStorage.On("GetCoins", ctx, senderID).Return(0, errors.New("db error"))
+	err, isInternal = u.SendCoin(ctx, senderID, receiverLogin, amount)
+	assert.Error(t, err)
+	assert.True(t, isInternal)
+
+	mockEmployeeStorage.On("GetEmployeeID", ctx, receiverLogin).Return(0, errors.New("receiver not found"))
+	err, _ = u.SendCoin(ctx, senderID, receiverLogin, amount)
+	assert.Error(t, err)
+
+	mockManagementStorage.On("ProvideOperation", ctx, senderID, receiverID, amount).Return(errors.New("operation error"))
+	err, isInternal = u.SendCoin(ctx, senderID, receiverLogin, amount)
+	assert.Error(t, err)
+	assert.True(t, isInternal)
 }
