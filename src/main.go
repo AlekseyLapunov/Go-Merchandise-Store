@@ -1,27 +1,39 @@
 package main
 
 import (
-    "context"
-    "database/sql"
-    "log"
-    "os"
-    "os/signal"
-    "syscall"
-    "time"
-    "net/http"
-    "github.com/AlekseyLapunov/Go-Merchandise-Store/src/handler"
-    "github.com/AlekseyLapunov/Go-Merchandise-Store/src/usecase"
-    "github.com/AlekseyLapunov/Go-Merchandise-Store/src/storage"
-    _ "github.com/lib/pq"
+	"context"
+	"database/sql"
+	"fmt"
+	"log"
+	"net/http"
+	"os"
+	"os/signal"
+	"syscall"
+	"time"
+
+	"github.com/AlekseyLapunov/Go-Merchandise-Store/src/handler"
+	"github.com/AlekseyLapunov/Go-Merchandise-Store/src/storage"
+	"github.com/AlekseyLapunov/Go-Merchandise-Store/src/usecase"
+	_ "github.com/lib/pq"
 )
 
-func main() {
-    const ENV_MERCH_STORE_DB_URL = "MERCH_STORE_DB_URL"
+const ENV_MERCH_STORE_DB_URL = "MERCH_STORE_DB_URL"
+const ENV_MERCH_STORE_PORT   = "MERCH_STORE_PORT"
 
-    dsn := os.Getenv(ENV_MERCH_STORE_DB_URL)
-    if dsn == "" {
-        log.Fatalf("\"%s\" environment variable is not set", ENV_MERCH_STORE_DB_URL)
+func init() {
+    check := os.Getenv(ENV_MERCH_STORE_DB_URL)
+    if check == "" {
+        log.Fatalf("$\"%s\" not set: no DB connection URL", ENV_MERCH_STORE_DB_URL)
     }
+
+    check = os.Getenv(ENV_MERCH_STORE_PORT)
+    if check == "" {
+        log.Fatalf("$\"%s\" not set: application port unknown", ENV_MERCH_STORE_PORT)
+    }
+}
+
+func main() {
+    dsn := os.Getenv(ENV_MERCH_STORE_DB_URL)
 
     db, err := sql.Open("postgres", dsn)
     if err != nil {
@@ -41,9 +53,10 @@ func main() {
     employeeUsecase := usecase.NewEmployeeUsecase(&employeeStorage, &managementStorage)
     merchUsecase    := usecase.NewMerchUsecase(&merchStorage, &managementStorage)
 
+    addr := fmt.Sprintf(":%s", os.Getenv(ENV_MERCH_STORE_DB_URL))
     router := handler.NewRouter(&employeeUsecase, &merchUsecase)
     server := &http.Server{
-        Addr:    ":8080",
+        Addr:    addr,
         Handler: router,
     }
 
@@ -55,7 +68,7 @@ func main() {
             log.Fatalf("Failed to start server: %v", err)
         }
     }()
-    log.Println("Server started on :8080")
+    log.Printf("Server started on %s\n", addr)
 
     <-done
     log.Println("Server is shutting down...")
