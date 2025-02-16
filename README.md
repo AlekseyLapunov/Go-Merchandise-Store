@@ -1,5 +1,11 @@
 # Merchandise store
 
+Сервис "Магазин мерча" разработан по методологии Domain Driven Design.
+
+# Запуск приложения
+
+
+
 # Тестирование
 
 Проект содержит модульные и e2e-тесты.
@@ -9,13 +15,13 @@
 Вывод команды `go test ./... -cover` в каталоге исходного кода `src` следующий:
 
 ```
-?       <snap>src/entity     [no test files]
-        <snap>src                     coverage: 0.0% of statements
-ok      <snap>src/handler    (cached) coverage: 69.0% of statements
-ok      <snap>src/middleware (cached) coverage: 44.7% of statements
-        <snap>src/mockery             coverage: 0.0% of statements
-ok      <snap>src/storage    (cached) coverage: 63.5% of statements
-ok      <snap>src/usecase    (cached) coverage: 68.4% of statements
+?   <snap>src/entity     [no test files]
+    <snap>src                            coverage: 0.0% of statements
+ok  <snap>src/handler    (cached)        coverage: 69.0% of statements
+ok  <snap>src/middleware (cached)        coverage: 44.7% of statements
+    <snap>src/mockery                    coverage: 0.0% of statements
+ok  <snap>src/storage    (cached)        coverage: 63.5% of statements
+ok  <snap>src/usecase    (cached)        coverage: 68.4% of statements
 ```
 
 Слой `entity` не нуждается в тестах, так содержит только структуры. Пакет `mockery` также не нужно тестировать, так как в нём представлены моки объектов из слоёв `usecase` и `storage`.
