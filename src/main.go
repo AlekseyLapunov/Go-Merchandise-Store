@@ -37,12 +37,14 @@ func main() {
 
     db, err := sql.Open("postgres", dsn)
     if err != nil {
-        log.Fatalf("Can't connect to the database: %v", err)
+        log.Printf("Can't connect to the database: %v", err)
+        return
     }
     defer db.Close()
 
     if err := db.Ping(); err != nil {
-        log.Fatalf("Probe ping to the database was not answered: %v", err)
+        log.Printf("Probe ping to the database was not answered: %v", err)
+        return
     }
     log.Println("Connection to the database is established")
 
@@ -65,7 +67,8 @@ func main() {
 
     go func() {
         if err := server.ListenAndServe(); err != nil && err != http.ErrServerClosed {
-            log.Fatalf("Failed to start server: %v", err)
+            log.Printf("Failed to start server: %v", err)
+            return
         }
     }()
     log.Printf("Server started on %s\n", addr)
@@ -77,7 +80,8 @@ func main() {
     defer cancel()
 
     if err := server.Shutdown(ctx); err != nil {
-        log.Fatalf("Server shutdown failed: %v", err)
+        log.Printf("Server shutdown failed: %v", err)
+        return
     }
     log.Println("Server stopped gracefully")
 }
