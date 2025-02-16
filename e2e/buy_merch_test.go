@@ -67,6 +67,8 @@ func TestBuyMerch_Valid(t *testing.T) {
         err = json.NewDecoder(resp.Body).Decode(&infoResponse)
         assert.NoError(t, err, "can't decode infoResponse")
 
+        assert.Equal(t, infoResponse.Inventory[0].Type, "powerbank")
+        assert.Equal(t, infoResponse.Inventory[0].Quantity, 3)
         assert.Equal(t, infoResponse.Coins, 1000 - powerbanks*cost)
     }
 }
