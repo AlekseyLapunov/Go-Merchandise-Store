@@ -1,13 +1,14 @@
 package main_test
 
 import (
-    "encoding/json"
-    "net/http"
-    "testing"
+	"encoding/json"
+	"fmt"
+	"net/http"
+	"testing"
 
-    "github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/assert"
 
-    "github.com/AlekseyLapunov/Go-Merchandise-Store/e2e/structs"
+	"github.com/AlekseyLapunov/Go-Merchandise-Store/e2e/structs"
 )
 
 func TestBuyMerch_Valid(t *testing.T) {
@@ -115,3 +116,67 @@ func TestBuyMerch_InsufficientCoins(t *testing.T) {
     // --- last reponse should contain status code 400
     assert.Equal(t, http.StatusBadRequest, resp.StatusCode, "expected bad request")
 }
+
+func TestBuyMerch_Verbose(t *testing.T) {
+    client := &http.Client{}
+
+    token := auth(t, "test_user8", "some_password")
+
+    itemsToBuy := []structs.InventoryItem {
+        {"hoody",    1},  // 300
+        {"pen",      15}, // 150
+        {"umbrella", 1},  // 200
+        {"socks",    2},  // 20
+        {"wallet",   2},  // 50
+        {"book",     4},  // 200
+        {"cup",      1},  // 20
+
+    }
+    resultCost := 990
+
+    // --- buying a bunch of different items
+    for _, item := range itemsToBuy {
+        req, err := http.NewRequest("GET", MERCH_APP_URL + fmt.Sprintf("/api/buy/%s", item.Type), nil)
+        assert.NoError(t, err)
+        req.Header.Set("Authorization", "BearerAuth " + token)
+    
+        for i := 0; i < item.Quantity; i++ {
+            resp, err := client.Do(req)
+            assert.NoError(t, err)
+            defer resp.Body.Close()
+
+            assert.Equal(t, http.StatusOK, resp.StatusCode, "expected successful operation")
+        }
+    }
+    
+    // --- checking info after these purchases
+    {
+        req, err := http.NewRequest("GET", MERCH_APP_URL + "/api/info", nil)
+        assert.NoError(t, err)
+        req.Header.Set("Authorization", "BearerAuth " + token)
+    
+        resp, err := client.Do(req)
+        assert.NoError(t, err)
+        defer resp.Body.Close()
+        assert.Equal(t, http.StatusOK, resp.StatusCode, "expected successful status")
+
+        var infoResponse structs.InfoResponse
+
+        err = json.NewDecoder(resp.Body).Decode(&infoResponse)
+        assert.NoError(t, err, "can't decode infoResponse")
+
+        nameToQuantity := make(map[string]int)
+        for _, item := range itemsToBuy {
+            nameToQuantity[item.Type] += item.Quantity
+        }
+
+        for _, item := range infoResponse.Inventory {
+            quantity := nameToQuantity[item.Type]
+            assert.Equal(t, item.Quantity, quantity)
+        }
+
+        assert.Equal(t, infoResponse.Coins, 1000 - resultCost)
+    }
+}
+
+
