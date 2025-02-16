@@ -1,3 +1,3 @@
-create database merch_store;
+-- create database merch_store;
 
-alter role postgres with password '784826';
+-- alter role postgres with password '784826';
