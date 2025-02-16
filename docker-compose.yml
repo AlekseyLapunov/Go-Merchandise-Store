@@ -34,6 +34,14 @@ services:
     depends_on:
       app:
         condition: service_started
+    environment:
+      RUN_E2E: ${RUN_E2E:-false}
+    command: >
+      sh -c "if [ \"$RUN_E2E\" = \"true\" ]; then
+              ./e2e;
+            else
+              echo 'Skipping e2e tests (to use make sure to set up RUN_E2E=true)';
+            fi"
 
 volumes:
   postgres-data:
