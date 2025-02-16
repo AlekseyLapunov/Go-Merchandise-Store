@@ -32,11 +32,13 @@ func TestSendCoin_Valid(t *testing.T) {
 
     // --- first employee sends coins
     e := emps[0]
-    sendCoin(t, e.client, e.token, "test_user4", e.coinsToSend)
+    resp := sendCoin(t, e.client, e.token, "test_user4", e.coinsToSend)
+    assert.Equal(t, http.StatusOK, resp.StatusCode, "expected successful status")
 
     // --- second employee also sends coins
     e = emps[1]
-    sendCoin(t, e.client, e.token, "test_user3", e.coinsToSend)
+    resp = sendCoin(t, e.client, e.token, "test_user3", e.coinsToSend)
+    assert.Equal(t, http.StatusOK, resp.StatusCode, "expected successful status")
 
     // --- both users are checking their balance after those transfers
     for i, e := range emps {
@@ -91,6 +93,37 @@ func TestSendCoin_Verbose(t *testing.T) {
     checkHistory(t, e.client, e.token, "test_user45", 5)
 }
 
+func TestSendCoin_Insufficient(t *testing.T) {
+    type Emps struct {
+        client      *http.Client
+        token       string
+        coinsToSend int
+    }
+
+    emps := []Emps{
+        {&http.Client{}, auth(t, "test_user1234", "some_password"), 45773},
+        {&http.Client{}, auth(t, "test_user5324", "some_password"), 6345},
+    }
+
+    // --- first employee tries to send a lot of coins
+    e := emps[0]
+    resp := sendCoin(t, e.client, e.token, "test_user5324", e.coinsToSend)
+    assert.Equal(t, http.StatusBadRequest, resp.StatusCode, "expected bad request")
+
+    // -- first employee checking his balance
+    _, info := getInfo(t, e.client, e.token)
+    assert.Equal(t, info.Coins, 1000)
+
+    // --- second employee also sends coins
+    e = emps[1]
+    resp = sendCoin(t, e.client, e.token, "test_user1234", e.coinsToSend)
+    assert.Equal(t, http.StatusBadRequest, resp.StatusCode, "expected bad request")
+
+    // -- second employee checking his balance
+    _, info = getInfo(t, e.client, e.token)
+    assert.Equal(t, info.Coins, 1000)
+}
+
 func sendCoin(t *testing.T, client *http.Client, token, toUser string, amount int) *http.Response {
     body := fmt.Sprintf(`{"toUser": "%s", "amount": %d}`, toUser, amount)
 
@@ -101,8 +134,6 @@ func sendCoin(t *testing.T, client *http.Client, token, toUser string, amount in
     resp, err := client.Do(req)
     assert.NoError(t, err)
     defer resp.Body.Close()
-
-    assert.Equal(t, http.StatusOK, resp.StatusCode, "expected successful status")
 
     return resp
 }
@@ -128,6 +159,7 @@ func getInfo(t *testing.T, client *http.Client, token string) (*http.Response, s
 func checkHistory(t *testing.T, client *http.Client, token string, fromUser string, amount int) {
     _, info := getInfo(t, client, token)
 
+    // json response might come in different order so i need to find info correctly
     isFound    := false
     realAmount := 0
     for _, entry := range info.CoinHistory.Received {
