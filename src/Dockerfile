@@ -2,7 +2,7 @@ FROM golang:alpine AS builder
 WORKDIR /app
 COPY . .
 RUN go mod tidy
-RUN go build -o merch_app .
+RUN go build -ldflags="-s -w" -o merch_app .
 
 FROM alpine:latest
 WORKDIR /app
