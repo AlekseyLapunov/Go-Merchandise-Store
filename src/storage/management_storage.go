@@ -94,11 +94,7 @@ func (s *ManagementStorage) ProvidePurchase(ctx context.Context, employeeID int,
     if err != nil {
         return err
     }
-    defer func() {
-        if err := tx.Rollback(); err != nil {
-            log.Printf("failed to rollback transaction: %v", err)
-        }
-    }()
+    defer rollbackWrap(tx)
 
     _, err = tx.ExecContext(ctx, `
         UPDATE employees 
@@ -135,11 +131,7 @@ func (s *ManagementStorage) ProvideOperation(ctx context.Context, senderID, rece
     if err != nil {
         return err
     }
-    defer func() {
-        if err := tx.Rollback(); err != nil {
-            log.Printf("failed to rollback transaction: %v", err)
-        }
-    }()
+    defer rollbackWrap(tx)
 
     _, err = tx.ExecContext(ctx, `
         UPDATE employees 
@@ -232,5 +224,15 @@ func (s *ManagementStorage) FetchSentHistory(ctx context.Context, senderID int) 
     }
     
     return sent, nil
+}
+
+func rollbackWrap(tx *sql.Tx) {
+    if tx == nil {
+        return
+    }
+
+    if err := tx.Rollback(); err != nil {
+        log.Printf("rollback: %v", err)
+    }
 }
 
