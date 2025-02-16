@@ -29,5 +29,11 @@ services:
     ports:
       - "8080:8080"
 
+  tests:
+    build: ./e2e
+    depends_on:
+      app:
+        condition: service_started
+
 volumes:
   postgres-data:
