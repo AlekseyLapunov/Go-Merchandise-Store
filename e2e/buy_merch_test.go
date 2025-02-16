@@ -10,7 +10,7 @@ import (
     "github.com/AlekseyLapunov/Go-Merchandise-Store/e2e/structs"
 )
 
-func TestBuyMerch(t *testing.T) {
+func TestBuyMerch_Valid(t *testing.T) {
     client := &http.Client{}
 
     token := auth(t, "test_user1", "some_password")
