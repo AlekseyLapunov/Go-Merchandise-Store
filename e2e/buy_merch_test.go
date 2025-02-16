@@ -1,7 +1,6 @@
 package main_test
 
 import (
-	"encoding/json"
 	"fmt"
 	"net/http"
 	"testing"
@@ -18,21 +17,10 @@ func TestBuyMerch_Valid(t *testing.T) {
 
     // --- checking that we have 1000 coins on start
     {
-        req, err := http.NewRequest("GET", MERCH_APP_URL + "/api/info", nil)
-        assert.NoError(t, err)
-        req.Header.Set("Authorization", "BearerAuth " + token)
-    
-        resp, err := client.Do(req)
-        assert.NoError(t, err)
-        defer resp.Body.Close()
+        resp, info := getInfo(t, client, token)
+
         assert.Equal(t, http.StatusOK, resp.StatusCode, "expected successful status")
-
-        var infoResponse structs.InfoResponse
-
-        err = json.NewDecoder(resp.Body).Decode(&infoResponse)
-        assert.NoError(t, err, "can't decode infoResponse")
-
-        assert.Equal(t, infoResponse.Coins, 1000)
+        assert.Equal(t, info.Coins, 1000)
     }
 
     // --- buying powerbanks
@@ -54,23 +42,12 @@ func TestBuyMerch_Valid(t *testing.T) {
 
     // --- checking info after these purchases
     {
-        req, err := http.NewRequest("GET", MERCH_APP_URL + "/api/info", nil)
-        assert.NoError(t, err)
-        req.Header.Set("Authorization", "BearerAuth " + token)
-    
-        resp, err := client.Do(req)
-        assert.NoError(t, err)
-        defer resp.Body.Close()
+        resp, info := getInfo(t, client, token)
+
         assert.Equal(t, http.StatusOK, resp.StatusCode, "expected successful status")
-
-        var infoResponse structs.InfoResponse
-
-        err = json.NewDecoder(resp.Body).Decode(&infoResponse)
-        assert.NoError(t, err, "can't decode infoResponse")
-
-        assert.Equal(t, infoResponse.Inventory[0].Type, "powerbank")
-        assert.Equal(t, infoResponse.Inventory[0].Quantity, 3)
-        assert.Equal(t, infoResponse.Coins, 1000 - powerbanks*cost)
+        assert.Equal(t, info.Inventory[0].Type, "powerbank")
+        assert.Equal(t, info.Inventory[0].Quantity, 3)
+        assert.Equal(t, info.Coins, 1000 - powerbanks*cost)
     }
 }
 
@@ -151,32 +128,20 @@ func TestBuyMerch_Verbose(t *testing.T) {
     
     // --- checking info after these purchases
     {
-        req, err := http.NewRequest("GET", MERCH_APP_URL + "/api/info", nil)
-        assert.NoError(t, err)
-        req.Header.Set("Authorization", "BearerAuth " + token)
-    
-        resp, err := client.Do(req)
-        assert.NoError(t, err)
-        defer resp.Body.Close()
+        resp, info := getInfo(t, client, token)
+
         assert.Equal(t, http.StatusOK, resp.StatusCode, "expected successful status")
-
-        var infoResponse structs.InfoResponse
-
-        err = json.NewDecoder(resp.Body).Decode(&infoResponse)
-        assert.NoError(t, err, "can't decode infoResponse")
 
         nameToQuantity := make(map[string]int)
         for _, item := range itemsToBuy {
             nameToQuantity[item.Type] += item.Quantity
         }
 
-        for _, item := range infoResponse.Inventory {
+        for _, item := range info.Inventory {
             quantity := nameToQuantity[item.Type]
             assert.Equal(t, item.Quantity, quantity)
         }
 
-        assert.Equal(t, infoResponse.Coins, 1000 - resultCost)
+        assert.Equal(t, info.Coins, 1000 - resultCost)
     }
 }
-
-
