@@ -112,6 +112,6 @@ func TestBuyMerch_InsufficientCoins(t *testing.T) {
         return
     }
     
-    // --- last reponse should contain status code 405
-    assert.Equal(t, http.StatusMethodNotAllowed, resp.StatusCode, "expected method not allowed")
+    // --- last reponse should contain status code 400
+    assert.Equal(t, http.StatusBadRequest, resp.StatusCode, "expected bad request")
 }
