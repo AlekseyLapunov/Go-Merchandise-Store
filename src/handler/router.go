@@ -8,7 +8,7 @@ import (
 )
 
 func NewRouter(employeeUsecase usecase.IEmployeeUsecase, merchUsecase usecase.IMerchUsecase) *gin.Engine {
-    router := gin.Default()
+    router := gin.New()
 
     employeeHandler := NewEmployeeHandler(employeeUsecase)
     merchHandler := NewMerchHandler(merchUsecase)
