@@ -72,3 +72,46 @@ func TestBuyMerch_Valid(t *testing.T) {
         assert.Equal(t, infoResponse.Coins, 1000 - powerbanks*cost)
     }
 }
+
+func TestBuyMerch_WrongToken(t *testing.T) {
+    client := &http.Client{}
+
+    falseToken := "l;lgldfg.jkkasdlk.690gflkk5"
+
+    // --- trying to buy something
+    req, err := http.NewRequest("GET", MERCH_APP_URL + "/api/buy/hoody", nil)
+    assert.NoError(t, err)
+    req.Header.Set("Authorization", "BearerAuth " + falseToken)
+
+    resp, err := client.Do(req)
+    assert.NoError(t, err)
+    defer resp.Body.Close()
+
+    assert.Equal(t, http.StatusUnauthorized, resp.StatusCode, "expected unauthorized")
+}
+
+func TestBuyMerch_InsufficientCoins(t *testing.T) {
+    client := &http.Client{}
+
+    token := auth(t, "test_user5", "some_password")
+
+    // --- trying to buy something expensive a lot of times
+    const hoodies = 6
+    req, err := http.NewRequest("GET", MERCH_APP_URL + "/api/buy/hoody", nil)
+    assert.NoError(t, err)
+    req.Header.Set("Authorization", "BearerAuth " + token)
+
+    var resp *http.Response
+    for i := 0; i < hoodies; i++ {
+        resp, err := client.Do(req)
+        assert.NoError(t, err)
+        defer resp.Body.Close()
+    }
+
+    if resp == nil {
+        return
+    }
+    
+    // --- last reponse should contain status code 405
+    assert.Equal(t, http.StatusMethodNotAllowed, resp.StatusCode, "expected method not allowed")
+}
