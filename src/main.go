@@ -53,7 +53,7 @@ func main() {
     employeeUsecase := usecase.NewEmployeeUsecase(&employeeStorage, &managementStorage)
     merchUsecase    := usecase.NewMerchUsecase(&merchStorage, &managementStorage)
 
-    addr := fmt.Sprintf(":%s", os.Getenv(ENV_MERCH_STORE_DB_URL))
+    addr := fmt.Sprintf(":%s", os.Getenv(ENV_MERCH_STORE_PORT))
     router := handler.NewRouter(&employeeUsecase, &merchUsecase)
     server := &http.Server{
         Addr:    addr,
