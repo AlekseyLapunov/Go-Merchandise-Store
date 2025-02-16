@@ -79,7 +79,7 @@ ok  <snap>src/usecase    (cached)        coverage: 68.4% of statements
 
 ```bash
 $ cd src
-
+$ go mod tidy
 $ go test ./... -cover
 ```
 
