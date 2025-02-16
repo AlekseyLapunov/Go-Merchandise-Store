@@ -29,6 +29,7 @@ $ docker compose down -v
 Конфигурация линтера представлена в каталоге `src`, файл `.golangci.yaml`. Запуск:
 ```bash
 $ cd src
+$ go mod tidy
 $ golangci-lint run
 ```
 
