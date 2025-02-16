@@ -9,6 +9,7 @@ import (
 
 func NewRouter(employeeUsecase usecase.IEmployeeUsecase, merchUsecase usecase.IMerchUsecase) *gin.Engine {
     router := gin.New()
+    gin.SetMode(gin.ReleaseMode)
 
     employeeHandler := NewEmployeeHandler(employeeUsecase)
     merchHandler := NewMerchHandler(merchUsecase)
