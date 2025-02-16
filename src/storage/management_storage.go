@@ -1,9 +1,11 @@
 package storage
 
 import (
-    "context"
-    "database/sql"
-    "github.com/AlekseyLapunov/Go-Merchandise-Store/src/entity"
+	"context"
+	"database/sql"
+	"errors"
+
+	"github.com/AlekseyLapunov/Go-Merchandise-Store/src/entity"
 )
 
 type IManagementStorage interface {
@@ -41,6 +43,10 @@ func (s *ManagementStorage) GetInventory(ctx context.Context, employeeID int) ([
         WHERE p.emp_id = $1
         GROUP BY m.name
     `, employeeID)
+    if errors.Is(err, sql.ErrNoRows) {
+        return []entity.InventoryItem{}, nil
+    }
+
     if err != nil {
         return nil, err
     }
@@ -162,6 +168,10 @@ func (s *ManagementStorage) FetchReceivedHistory(ctx context.Context, receiverID
         JOIN employees AS e ON o.send_emp_id = e.id
         WHERE o.recv_emp_id = $1
     `, receiverID)
+    if errors.Is(err, sql.ErrNoRows) {
+        return []entity.RecvEntry{}, nil
+    }
+
     if err != nil {
         return nil, err
     }
@@ -190,6 +200,10 @@ func (s *ManagementStorage) FetchSentHistory(ctx context.Context, senderID int) 
         JOIN employees AS e ON o.recv_emp_id = e.id
         WHERE o.send_emp_id = $1
     `, senderID)
+    if errors.Is(err, sql.ErrNoRows) {
+        return []entity.SentEntry{}, nil
+    }
+
     if err != nil {
         return nil, err
     }
