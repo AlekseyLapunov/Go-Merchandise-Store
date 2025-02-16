@@ -1,0 +1,33 @@
+services:
+  postgres:
+    image: postgres:alpine
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 784826
+      POSTGRES_DB: merch_store
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+      - ./db-scripts:/docker-entrypoint-initdb.d
+    ports:
+      - "5433:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d merch_store"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  app:
+    build: ./src
+    environment:
+      MERCH_STORE_DB_URL: postgres://merch_app:426643@postgres:5432/merch_store?sslmode=disable
+      JWT_SECRET: 7683458
+      MERCH_STORE_PORT: 8080
+      GIN_MODE: release
+    depends_on:
+      postgres:
+        condition: service_healthy
+    ports:
+      - "8080:8080"
+
+volumes:
+  postgres-data:
